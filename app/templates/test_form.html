@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Test Form</h2>
+
+<form method="POST">
+
+    <div class="mb-3">
+        <label>Name</label>
+        <input
+            type="text"
+            name="name"
+            class="form-control">
+    </div>
+
+    <button class="btn btn-primary">
+        Submit
+    </button>
+
+</form>
+
+{% endblock %}
