@@ -16,3 +16,7 @@ def login():
 @app.route("/register")
 def register():
     return render_template("register.html")
+
+@app.route("/vehicle/<int:id>")
+def vehicle(id):
+    return f"Vehicle ID: {id}"
