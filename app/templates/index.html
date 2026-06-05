@@ -1,20 +1,19 @@
-<head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-5">
-        <h1 class="display-4">Mekanik</h1>
+{% extends "base.html" %}
 
-        <p class="lead">
-            AI-Assisted Vehicle Service Platform
-        </p>
+{% block content %}
 
-        <hr>
+<h1>{{ platform_name }}</h1>
 
-        <p>Created by {{ owner }}</p>
+<p>
+    AI-Assisted Vehicle Service Platform
+</p>
 
-        <button class="btn btn-primary">
-            Get Started
-        </button>
-    </div>
-</body>
+<p>
+    Created by {{ owner }}
+</p>
+
+<button class="btn btn-primary">
+    Get Started
+</button>
+
+{% endblock %}
