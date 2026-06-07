@@ -1,8 +1,8 @@
 from flask import render_template, request
 from app import app
 
+from app.models import User
 from app import db
-
 
 
 @app.route("/test-form", methods=["GET", "POST"])
@@ -24,10 +24,7 @@ def home():
         owner="Anandu"
     )
 
-@app.route("/db-test")
-def db_test():
-    db.session.execute(db.text("SELECT 1"))
-    return "Database Connected!"
+
 @app.route("/login")
 def login():
     return render_template("login.html")
@@ -40,3 +37,23 @@ def register():
 @app.route("/vehicle/<int:id>")
 def vehicle(id):
     return f"Vehicle ID: {id}"
+
+@app.route("/add-user", methods=["GET", "POST"])
+def add_user():
+
+    if request.method == "POST":
+
+        name = request.form["name"]
+        email = request.form["email"]
+
+        user = User(
+            name=name,
+            email=email
+        )
+
+        db.session.add(user)
+        db.session.commit()
+
+        return "User saved successfully!"
+
+    return render_template("add_user.html")
