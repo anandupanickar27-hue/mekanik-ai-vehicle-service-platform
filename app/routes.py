@@ -57,3 +57,13 @@ def add_user():
         return "User saved successfully!"
 
     return render_template("add_user.html")
+
+@app.route("/users")
+def users():
+
+    users = User.query.all()
+
+    return render_template(
+        "users.html",
+        users=users
+    )
