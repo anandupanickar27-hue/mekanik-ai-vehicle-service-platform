@@ -1,6 +1,10 @@
 from flask import render_template, request
 from app import app
 
+from app import db
+
+
+
 @app.route("/test-form", methods=["GET", "POST"])
 def test_form():
 
@@ -19,6 +23,11 @@ def home():
         platform_name="Mekanik",
         owner="Anandu"
     )
+
+@app.route("/db-test")
+def db_test():
+    db.session.execute(db.text("SELECT 1"))
+    return "Database Connected!"
 @app.route("/login")
 def login():
     return render_template("login.html")
