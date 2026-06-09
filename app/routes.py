@@ -4,6 +4,7 @@ from app import app
 from app.models import User
 from app import db
 from flask import redirect, url_for
+from app.models import User, Vehicle
 
 
 @app.route("/test-form", methods=["GET", "POST"])
@@ -98,3 +99,27 @@ def edit_user(id):
         "edit_user.html",
         user=user
     )
+
+@app.route("/add-vehicle", methods=["GET", "POST"])
+def add_vehicle():
+
+    if request.method == "POST":
+
+        company = request.form["company"]
+        model = request.form["model"]
+        year = request.form["year"]
+        registration_number = request.form["registration_number"]
+
+        vehicle = Vehicle(
+            company=company,
+            model=model,
+            year=year,
+            registration_number=registration_number
+        )
+
+        db.session.add(vehicle)
+        db.session.commit()
+
+        return "Vehicle saved successfully!"
+
+    return render_template("add_vehicle.html")
