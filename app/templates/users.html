@@ -11,6 +11,7 @@
             <th>ID</th>
             <th>Name</th>
             <th>Email</th>
+            <th>Action</th>
         </tr>
     </thead>
 
@@ -22,7 +23,26 @@
             <td>{{ user.id }}</td>
             <td>{{ user.name }}</td>
             <td>{{ user.email }}</td>
+
+            <td>
+                <a href="/delete-user/{{ user.id }}"
+                   class="btn btn-danger btn-sm">
+                    Delete
+                </a>
+            </td>
         </tr>
+
+        <td>
+    <a href="/edit-user/{{ user.id }}"
+       class="btn btn-warning btn-sm">
+        Edit
+    </a>
+
+    <a href="/delete-user/{{ user.id }}"
+       class="btn btn-danger btn-sm">
+        Delete
+    </a>
+</td>
 
         {% endfor %}
 
@@ -31,3 +51,4 @@
 </table>
 
 {% endblock %}
+

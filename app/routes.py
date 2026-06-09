@@ -3,6 +3,7 @@ from app import app
 
 from app.models import User
 from app import db
+from flask import redirect, url_for
 
 
 @app.route("/test-form", methods=["GET", "POST"])
@@ -66,4 +67,34 @@ def users():
     return render_template(
         "users.html",
         users=users
+    )
+
+@app.route("/delete-user/<int:id>")
+def delete_user(id):
+
+    user = User.query.get(id)
+
+    db.session.delete(user)
+
+    db.session.commit()
+
+    return redirect(url_for("users"))
+
+@app.route("/edit-user/<int:id>", methods=["GET", "POST"])
+def edit_user(id):
+
+    user = User.query.get(id)
+
+    if request.method == "POST":
+
+        user.name = request.form["name"]
+        user.email = request.form["email"]
+
+        db.session.commit()
+
+        return redirect(url_for("users"))
+
+    return render_template(
+        "edit_user.html",
+        user=user
     )
