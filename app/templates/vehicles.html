@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Vehicles</h2>
+
+<table class="table">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>COMPANY</th>
+            <th>MODEL</th>
+            <th>YEAR</th>
+            <th>REGISTRATION NUMBER</th>
+        </tr>
+    </thead>
+
+    <tbody>
+            {% for vehicle in vehicles %}
+
+            <tr>
+            <td>{{ vehicle.id }}</td>
+            <td>{{ vehicle.company }}</td>
+            <td>{{ vehicle.model }}</td>
+            <td>{{ vehicle.year }}</td>
+            <td>{{ vehicle.registration_number }}</td>
+            </tr>
+            
+       </tbody>
+    </table> 
+
+            {% endfor %}
+
+{% endblock %}

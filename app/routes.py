@@ -104,22 +104,34 @@ def edit_user(id):
 def add_vehicle():
 
     if request.method == "POST":
-
+        user_id = request.form["user_id"]
         company = request.form["company"]
         model = request.form["model"]
         year = request.form["year"]
         registration_number = request.form["registration_number"]
 
         vehicle = Vehicle(
-            company=company,
-            model=model,
-            year=year,
-            registration_number=registration_number
-        )
+                        company=company,
+                        model=model,
+                        year=year,
+                        registration_number=registration_number,
+                        user_id=user_id
+                            )
 
         db.session.add(vehicle)
         db.session.commit()
-
         return "Vehicle saved successfully!"
 
-    return render_template("add_vehicle.html")
+    users = User.query.all()
+
+    return render_template(
+        "add_vehicle.html",
+        users=users
+        )
+
+
+@app.route("/vehicles")
+def vehicles():
+    vehicles=Vehicle.query.all()
+
+    return render_template("vehicles.html", vehicles=vehicles )
