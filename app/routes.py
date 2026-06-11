@@ -7,6 +7,7 @@ from flask import redirect, url_for
 from app.models import User, Vehicle
 from app.models import Appointment, Vehicle
 from app.ai_helper import categorize_issue
+from app.gemini_helper import ask_gemini
 
 
 @app.route("/test-form", methods=["GET", "POST"])
@@ -231,7 +232,21 @@ def ai_assistant():
 
         issue = request.form["issue"]
 
-        response = f"You reported: {issue}"
+        response = ask_gemini(
+            f"""
+            You are an automobile service expert.
+
+            User issue:
+            {issue}
+
+            Give:
+            1. Possible causes
+            2. Recommended action
+            3. Whether immediate service is needed
+
+            Keep the response concise.
+            """
+        )
 
     return render_template(
         "ai_assistant.html",

@@ -1,4 +1,8 @@
 from urllib.parse import quote_plus
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 password = quote_plus("Nripan@15")
 

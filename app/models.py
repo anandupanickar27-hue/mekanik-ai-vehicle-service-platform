@@ -78,4 +78,6 @@ class Appointment(db.Model):
 
     category = db.Column(
     db.String(50)
-    )    
+    )   
+
+    ai_recommendation = db.Column(db.Text) 
