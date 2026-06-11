@@ -6,6 +6,7 @@ from app import db
 from flask import redirect, url_for
 from app.models import User, Vehicle
 from app.models import Appointment, Vehicle
+from app.ai_helper import categorize_issue
 
 
 @app.route("/test-form", methods=["GET", "POST"])
@@ -146,11 +147,13 @@ def book_appointment():
         vehicle_id = request.form["vehicle_id"]
         service_date = request.form["service_date"]
         issue_description = request.form["issue_description"]
+        category = categorize_issue(issue_description)
 
         appointment = Appointment(
             vehicle_id=vehicle_id,
             service_date=service_date,
-            issue_description=issue_description
+            issue_description=issue_description,
+            category=category
         )
 
         db.session.add(appointment)
@@ -163,4 +166,58 @@ def book_appointment():
     return render_template(
         "book_appointment.html",
         vehicles=vehicles
+    )
+
+@app.route("/appointments")
+def appointments():
+
+    appointments = Appointment.query.all()
+
+    return render_template(
+        "appointments.html",
+        appointments=appointments
+    )
+
+@app.route("/update-status/<int:id>", methods=["GET", "POST"])
+def update_status(id):
+
+    appointment = Appointment.query.get(id)
+
+    if request.method == "POST":
+
+        appointment.status = request.form["status"]
+
+        db.session.commit()
+
+        return redirect(url_for("appointments"))
+
+    return render_template(
+        "update_status.html",
+        appointment=appointment
+    )
+
+@app.route("/dashboard")
+def dashboard():
+
+    total_users = User.query.count()
+
+    total_vehicles = Vehicle.query.count()
+
+    total_appointments = Appointment.query.count()
+
+    pending_appointments = Appointment.query.filter_by(
+        status="Pending"
+    ).count()
+
+    completed_appointments = Appointment.query.filter_by(
+        status="Completed"
+    ).count()
+
+    return render_template(
+        "dashboard.html",
+        total_users=total_users,
+        total_vehicles=total_vehicles,
+        total_appointments=total_appointments,
+        pending_appointments=pending_appointments,
+        completed_appointments=completed_appointments
     )

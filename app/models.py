@@ -74,4 +74,8 @@ class Appointment(db.Model):
         db.Integer,
         db.ForeignKey("vehicles.id"),
         nullable=False
+    )
+
+    category = db.Column(
+    db.String(50)
     )    

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Appointments</h2>
+
+<table class="table">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Vehicle ID</th>
+            <th>Service Date</th>
+            <th>Issue</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for appointment in appointments %}
+
+        <tr>
+            <td>{{ appointment.id }}</td>
+            <td>{{ appointment.vehicle_id }}</td>
+            <td>{{ appointment.service_date }}</td>
+            <td>{{ appointment.issue_description }}</td>
+            <td>{{ appointment.status }}</td>
+            <td>
+                <a href="/update-status/{{ appointment.id }}"
+                class="btn btn-warning btn-sm">
+                Update Status
+                </a>
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}
