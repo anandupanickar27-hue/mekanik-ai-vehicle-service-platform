@@ -5,6 +5,7 @@ from app.models import User
 from app import db
 from flask import redirect, url_for
 from app.models import User, Vehicle
+from app.models import Appointment, Vehicle
 
 
 @app.route("/test-form", methods=["GET", "POST"])
@@ -135,3 +136,31 @@ def vehicles():
     vehicles=Vehicle.query.all()
 
     return render_template("vehicles.html", vehicles=vehicles )
+
+
+@app.route("/book-appointment", methods=["GET", "POST"])
+def book_appointment():
+
+    if request.method == "POST":
+
+        vehicle_id = request.form["vehicle_id"]
+        service_date = request.form["service_date"]
+        issue_description = request.form["issue_description"]
+
+        appointment = Appointment(
+            vehicle_id=vehicle_id,
+            service_date=service_date,
+            issue_description=issue_description
+        )
+
+        db.session.add(appointment)
+        db.session.commit()
+
+        return "Appointment booked successfully!"
+
+    vehicles = Vehicle.query.all()
+
+    return render_template(
+        "book_appointment.html",
+        vehicles=vehicles
+    )
