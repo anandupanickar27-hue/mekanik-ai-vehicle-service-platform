@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Appointment Details</h2>
+
+<p><strong>ID:</strong> {{ appointment.id }}</p>
+
+<p><strong>Vehicle ID:</strong> {{ appointment.vehicle_id }}</p>
+
+<p><strong>Issue:</strong> {{ appointment.issue_description }}</p>
+
+<p><strong>Category:</strong> {{ appointment.category }}</p>
+
+<p><strong>Status:</strong> {{ appointment.status }}</p>
+
+<p><strong>AI Recommendation:</strong></p>
+
+<div class="card p-3">
+    {{ appointment.ai_recommendation }}
+</div>
+
+{% endblock %}

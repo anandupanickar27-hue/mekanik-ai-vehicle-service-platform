@@ -8,7 +8,11 @@ from app.models import User, Vehicle
 from app.models import Appointment, Vehicle
 from app.ai_helper import categorize_issue
 from app.gemini_helper import ask_gemini
-
+from sqlalchemy import or_
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
+)
 
 @app.route("/test-form", methods=["GET", "POST"])
 def test_form():
@@ -30,13 +34,55 @@ def home():
     )
 
 
-@app.route("/login")
+from flask_login import login_user
+
+@app.route("/login", methods=["GET", "POST"])
 def login():
+
+    if request.method == "POST":
+
+        email = request.form["email"]
+        password = request.form["password"]
+
+        user = User.query.filter_by(
+            email=email
+        ).first()
+
+        if user and check_password_hash(
+            user.password,
+            password
+        ):
+
+            login_user(user)
+
+            return redirect(
+                url_for("dashboard")
+            )
+
+        return "Invalid email or password"
+
     return render_template("login.html")
 
-
-@app.route("/register")
+@app.route("/register", methods=["GET", "POST"])
 def register():
+
+    if request.method == "POST":
+
+        name = request.form["name"]
+        email = request.form["email"]
+        password = request.form["password"]
+
+        user = User(
+            name=name,
+            email=email,
+            password=generate_password_hash(password)
+        )
+
+        db.session.add(user)
+        db.session.commit()
+
+        return redirect(url_for("login"))
+
     return render_template("register.html")
 
 @app.route("/vehicle/<int:id>")
@@ -148,13 +194,26 @@ def book_appointment():
         vehicle_id = request.form["vehicle_id"]
         service_date = request.form["service_date"]
         issue_description = request.form["issue_description"]
+        ai_recommendation = ask_gemini(
+                            f"""
+                            Vehicle Issue:
+                            {issue_description}
+
+                            Give:
+                            - Possible cause
+                            - Recommendation
+
+                            Keep it short.
+                            """
+                            )
         category = categorize_issue(issue_description)
 
         appointment = Appointment(
             vehicle_id=vehicle_id,
             service_date=service_date,
             issue_description=issue_description,
-            category=category
+            category=category,
+            ai_recommendation=ai_recommendation
         )
 
         db.session.add(appointment)
@@ -172,11 +231,36 @@ def book_appointment():
 @app.route("/appointments")
 def appointments():
 
-    appointments = Appointment.query.all()
+    search = request.args.get("search", "")
+    status = request.args.get("status", "")
+
+    query = Appointment.query
+
+    if search:
+        query = query.filter(
+            Appointment.issue_description.contains(search)
+        )
+
+    if status:
+        query = query.filter_by(status=status)
+
+    appointments = query.all()
 
     return render_template(
         "appointments.html",
-        appointments=appointments
+        appointments=appointments,
+        search=search,
+        status=status
+    )
+
+@app.route("/appointment/<int:id>")
+def appointment_details(id):
+
+    appointment = Appointment.query.get(id)
+
+    return render_template(
+        "appointment_details.html",
+        appointment=appointment
     )
 
 @app.route("/update-status/<int:id>", methods=["GET", "POST"])
@@ -214,14 +298,40 @@ def dashboard():
         status="Completed"
     ).count()
 
+    brake_count = Appointment.query.filter_by(
+    category="Brake"
+    ).count()
+
+    battery_count = Appointment.query.filter_by(
+    category="Battery"
+    ).count()
+
+    engine_count = Appointment.query.filter_by(
+    category="Engine"
+    ).count()
+
+    tire_count = Appointment.query.filter_by(
+    category="Tire"
+    ).count()
+
+    general_count = Appointment.query.filter_by(
+    category="General"
+    ).count()
+
     return render_template(
-        "dashboard.html",
-        total_users=total_users,
-        total_vehicles=total_vehicles,
-        total_appointments=total_appointments,
-        pending_appointments=pending_appointments,
-        completed_appointments=completed_appointments
-    )
+    "dashboard.html",
+    total_users=total_users,
+    total_vehicles=total_vehicles,
+    total_appointments=total_appointments,
+    pending_appointments=pending_appointments,
+    completed_appointments=completed_appointments,
+
+    brake_count=brake_count,
+    battery_count=battery_count,
+    engine_count=engine_count,
+    tire_count=tire_count,
+    general_count=general_count
+)
 
 @app.route("/ai-assistant", methods=["GET", "POST"])
 def ai_assistant():
@@ -252,3 +362,4 @@ def ai_assistant():
         "ai_assistant.html",
         response=response
     )
+
