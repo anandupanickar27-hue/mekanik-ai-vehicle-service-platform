@@ -221,3 +221,19 @@ def dashboard():
         pending_appointments=pending_appointments,
         completed_appointments=completed_appointments
     )
+
+@app.route("/ai-assistant", methods=["GET", "POST"])
+def ai_assistant():
+
+    response = None
+
+    if request.method == "POST":
+
+        issue = request.form["issue"]
+
+        response = f"You reported: {issue}"
+
+    return render_template(
+        "ai_assistant.html",
+        response=response
+    )
