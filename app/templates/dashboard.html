@@ -2,41 +2,34 @@
 
 {% block content %}
 
-<h2>Mekanik Dashboard</h2>
+<h2>Welcome, {{ current_user.name }}</h2>
 
 <div class="row">
 
     <div class="col-md-4 mb-3">
         <div class="card p-3">
-            <h4>Total Users</h4>
-            <h2>{{ total_users }}</h2>
+            <h4>My Vehicles</h4>
+            <h2>{{ my_vehicles }}</h2>
         </div>
     </div>
 
     <div class="col-md-4 mb-3">
         <div class="card p-3">
-            <h4>Total Vehicles</h4>
-            <h2>{{ total_vehicles }}</h2>
+            <h4>My Appointments</h4>
+            <h2>{{ my_appointments }}</h2>
         </div>
     </div>
 
     <div class="col-md-4 mb-3">
         <div class="card p-3">
-            <h4>Total Appointments</h4>
-            <h2>{{ total_appointments }}</h2>
-        </div>
-    </div>
-
-    <div class="col-md-4 mb-3">
-        <div class="card p-3">
-            <h4>Pending</h4>
+            <h4>Pending Services</h4>
             <h2>{{ pending_appointments }}</h2>
         </div>
     </div>
 
     <div class="col-md-4 mb-3">
         <div class="card p-3">
-            <h4>Completed</h4>
+            <h4>Completed Services</h4>
             <h2>{{ completed_appointments }}</h2>
         </div>
     </div>
@@ -62,38 +55,5 @@ new Chart(ctx, {
         }]
     }
 });
-</script>
-
-<canvas id="categoryChart"></canvas>
-
-<script>
-
-const categoryCtx =
-    document.getElementById("categoryChart");
-
-new Chart(categoryCtx, {
-    type: "bar",
-    data: {
-        labels: [
-            "Brake",
-            "Battery",
-            "Engine",
-            "Tire",
-            "General"
-        ],
-        datasets: [{
-            label: "Issues",
-            data: [
-                {{ brake_count }},
-                {{ battery_count }},
-                {{ engine_count }},
-                {{ tire_count }},
-                {{ general_count }}
-            ]
-        }]
-    }
-});
-
-</script>
 
 {% endblock %}

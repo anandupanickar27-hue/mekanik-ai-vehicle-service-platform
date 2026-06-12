@@ -1,11 +1,10 @@
 from flask import render_template, request
 from app import app
 
-from app.models import User
+from app.models import User, Vehicle, Appointment, MechanicProfile
+from flask_login import current_user
 from app import db
 from flask import redirect, url_for
-from app.models import User, Vehicle
-from app.models import Appointment, Vehicle
 from app.ai_helper import categorize_issue
 from app.gemini_helper import ask_gemini
 from sqlalchemy import or_
@@ -13,6 +12,23 @@ from werkzeug.security import (
     generate_password_hash,
     check_password_hash
 )
+from flask_login import login_required
+from flask_login import logout_user
+
+from functools import wraps
+from flask_login import current_user
+
+def admin_required(f):
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+
+        if current_user.role != "admin":
+            return "Access Denied"
+
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 @app.route("/test-form", methods=["GET", "POST"])
 def test_form():
@@ -27,11 +43,15 @@ def test_form():
 
 @app.route("/")
 def home():
-    return render_template(
-        "index.html",
-        platform_name="Mekanik",
-        owner="Anandu"
-    )
+
+    if current_user.is_authenticated:
+
+        if current_user.role == "mechanic":
+            return redirect(url_for("mechanic_dashboard"))
+
+        return redirect(url_for("dashboard"))
+
+    return render_template("index.html")
 
 
 from flask_login import login_user
@@ -55,9 +75,18 @@ def login():
 
             login_user(user)
 
-            return redirect(
-                url_for("dashboard")
-            )
+            if user.role == "mechanic":
+
+                if not user.mechanic_profile:
+                    return redirect(
+                    url_for("complete_mechanic_profile")
+                     )
+
+                return redirect(
+                url_for("mechanic_dashboard")
+                )
+
+            return redirect(url_for("dashboard"))
 
         return "Invalid email or password"
 
@@ -71,11 +100,13 @@ def register():
         name = request.form["name"]
         email = request.form["email"]
         password = request.form["password"]
+        role = request.form["role"]
 
         user = User(
             name=name,
             email=email,
-            password=generate_password_hash(password)
+            password=generate_password_hash(password),
+            role=role
         )
 
         db.session.add(user)
@@ -86,10 +117,13 @@ def register():
     return render_template("register.html")
 
 @app.route("/vehicle/<int:id>")
+@login_required
 def vehicle(id):
     return f"Vehicle ID: {id}"
 
 @app.route("/add-user", methods=["GET", "POST"])
+@login_required
+@admin_required
 def add_user():
 
     if request.method == "POST":
@@ -110,6 +144,8 @@ def add_user():
     return render_template("add_user.html")
 
 @app.route("/users")
+@login_required
+@admin_required
 def users():
 
     users = User.query.all()
@@ -120,6 +156,8 @@ def users():
     )
 
 @app.route("/delete-user/<int:id>")
+@login_required
+@admin_required
 def delete_user(id):
 
     user = User.query.get(id)
@@ -131,6 +169,8 @@ def delete_user(id):
     return redirect(url_for("users"))
 
 @app.route("/edit-user/<int:id>", methods=["GET", "POST"])
+@login_required
+@admin_required
 def edit_user(id):
 
     user = User.query.get(id)
@@ -150,10 +190,11 @@ def edit_user(id):
     )
 
 @app.route("/add-vehicle", methods=["GET", "POST"])
+@login_required
 def add_vehicle():
 
     if request.method == "POST":
-        user_id = request.form["user_id"]
+        user_id = current_user.id
         company = request.form["company"]
         model = request.form["model"]
         year = request.form["year"]
@@ -171,22 +212,23 @@ def add_vehicle():
         db.session.commit()
         return "Vehicle saved successfully!"
 
-    users = User.query.all()
-
     return render_template(
         "add_vehicle.html",
-        users=users
         )
 
 
 @app.route("/vehicles")
+@login_required
 def vehicles():
-    vehicles=Vehicle.query.all()
+    vehicles = Vehicle.query.filter_by(
+                user_id=current_user.id
+                ).all()
 
     return render_template("vehicles.html", vehicles=vehicles )
 
 
 @app.route("/book-appointment", methods=["GET", "POST"])
+@login_required
 def book_appointment():
 
     if request.method == "POST":
@@ -221,7 +263,9 @@ def book_appointment():
 
         return "Appointment booked successfully!"
 
-    vehicles = Vehicle.query.all()
+    vehicles = Vehicle.query.filter_by(
+                user_id=current_user.id
+                ).all()
 
     return render_template(
         "book_appointment.html",
@@ -229,6 +273,7 @@ def book_appointment():
     )
 
 @app.route("/appointments")
+@login_required
 def appointments():
 
     search = request.args.get("search", "")
@@ -244,7 +289,9 @@ def appointments():
     if status:
         query = query.filter_by(status=status)
 
-    appointments = query.all()
+    query = Appointment.query.join(Vehicle).filter(
+            Vehicle.user_id == current_user.id
+            )
 
     return render_template(
         "appointments.html",
@@ -254,9 +301,13 @@ def appointments():
     )
 
 @app.route("/appointment/<int:id>")
+@login_required
 def appointment_details(id):
 
     appointment = Appointment.query.get(id)
+
+    if appointment.vehicle.user_id != current_user.id:
+        return "Access Denied"
 
     return render_template(
         "appointment_details.html",
@@ -264,6 +315,8 @@ def appointment_details(id):
     )
 
 @app.route("/update-status/<int:id>", methods=["GET", "POST"])
+@login_required
+@admin_required
 def update_status(id):
 
     appointment = Appointment.query.get(id)
@@ -282,58 +335,36 @@ def update_status(id):
     )
 
 @app.route("/dashboard")
+@login_required
 def dashboard():
 
-    total_users = User.query.count()
-
-    total_vehicles = Vehicle.query.count()
-
-    total_appointments = Appointment.query.count()
-
-    pending_appointments = Appointment.query.filter_by(
-        status="Pending"
+    my_vehicles = Vehicle.query.filter_by(
+        user_id=current_user.id
     ).count()
 
-    completed_appointments = Appointment.query.filter_by(
-        status="Completed"
+    my_appointments = Appointment.query.join(Vehicle).filter(
+        Vehicle.user_id == current_user.id
     ).count()
 
-    brake_count = Appointment.query.filter_by(
-    category="Brake"
+    pending_appointments = Appointment.query.join(Vehicle).filter(
+        Vehicle.user_id == current_user.id,
+        Appointment.status == "Pending"
     ).count()
 
-    battery_count = Appointment.query.filter_by(
-    category="Battery"
-    ).count()
-
-    engine_count = Appointment.query.filter_by(
-    category="Engine"
-    ).count()
-
-    tire_count = Appointment.query.filter_by(
-    category="Tire"
-    ).count()
-
-    general_count = Appointment.query.filter_by(
-    category="General"
+    completed_appointments = Appointment.query.join(Vehicle).filter(
+        Vehicle.user_id == current_user.id,
+        Appointment.status == "Completed"
     ).count()
 
     return render_template(
-    "dashboard.html",
-    total_users=total_users,
-    total_vehicles=total_vehicles,
-    total_appointments=total_appointments,
-    pending_appointments=pending_appointments,
-    completed_appointments=completed_appointments,
-
-    brake_count=brake_count,
-    battery_count=battery_count,
-    engine_count=engine_count,
-    tire_count=tire_count,
-    general_count=general_count
-)
-
+        "dashboard.html",
+        my_vehicles=my_vehicles,
+        my_appointments=my_appointments,
+        pending_appointments=pending_appointments,
+        completed_appointments=completed_appointments
+    )
 @app.route("/ai-assistant", methods=["GET", "POST"])
+@login_required
 def ai_assistant():
 
     response = None
@@ -363,3 +394,55 @@ def ai_assistant():
         response=response
     )
 
+@app.route("/logout")
+@login_required
+def logout():
+
+    logout_user()
+
+    return redirect(url_for("login"))
+
+@app.route("/profile")
+@login_required
+def profile():
+
+    return render_template(
+        "profile.html",
+        user=current_user
+    )
+
+@app.route("/mechanic-dashboard")
+@login_required
+def mechanic_dashboard():
+
+    return render_template(
+        "mechanic_dashboard.html"
+    )
+
+@app.route("/complete-mechanic-profile", methods=["GET", "POST"])
+@login_required
+def complete_mechanic_profile():
+
+    if request.method == "POST":
+
+        specialization = request.form["specialization"]
+        experience = request.form["experience"]
+        phone = request.form["phone"]
+        bio = request.form["bio"]
+
+        profile = MechanicProfile(
+            user_id=current_user.id,
+            specialization=specialization,
+            experience=experience,
+            phone=phone,
+            bio=bio
+        )
+
+        db.session.add(profile)
+        db.session.commit()
+
+        return redirect(url_for("mechanic_dashboard"))
+
+    return render_template(
+        "complete_mechanic_profile.html"
+    )

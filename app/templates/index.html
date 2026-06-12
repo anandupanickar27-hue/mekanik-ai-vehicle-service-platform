@@ -2,18 +2,22 @@
 
 {% block content %}
 
-<h1>{{ platform_name }}</h1>
+<div class="container mt-5 text-center">
 
-<p>
-    AI-Assisted Vehicle Service Platform
-</p>
+    <h1 class="display-4">Welcome to Mekanik</h1>
 
-<p>
-    Created by {{ owner }}
-</p>
+    <p class="lead">
+        AI Powered Vehicle Service Platform
+    </p>
 
-<button class="btn btn-primary">
-    Get Started
-</button>
+    <a href="/login" class="btn btn-primary btn-lg">
+        Login
+    </a>
+
+    <a href="/register" class="btn btn-success btn-lg">
+        Register
+    </a>
+
+</div>
 
 {% endblock %}

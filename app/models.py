@@ -29,6 +29,18 @@ class User(UserMixin, db.Model):
         lazy=True
     )
 
+    role = db.Column(
+    db.String(20),
+    nullable=False,
+    default="customer"
+    )
+
+    mechanic_profile = db.relationship(
+    "MechanicProfile",
+    backref="user",
+    uselist=False
+)
+
 
 class Vehicle(db.Model):
     __tablename__ = "vehicles"
@@ -52,6 +64,13 @@ class Vehicle(db.Model):
         db.ForeignKey("users.id"),
         nullable=False
     )
+
+    appointments = db.relationship(
+    "Appointment",
+    backref="vehicle",
+    lazy=True
+    )
+
 
 class Appointment(db.Model):
     __tablename__ = "appointments"
@@ -89,6 +108,51 @@ class Appointment(db.Model):
 
     ai_recommendation = db.Column(db.Text) 
 
+   # mechanic_id = db.Column(
+    #db.Integer,
+    #db.ForeignKey("mechanics.id")
+    #)
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+class MechanicProfile(db.Model):
+
+    __tablename__ = "mechanic_profiles"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=False,
+        unique=True
+    )
+
+    specialization = db.Column(
+        db.String(100),
+        nullable=False
+    )
+
+    experience = db.Column(
+        db.Integer,
+        nullable=False
+    )
+
+    phone = db.Column(
+        db.String(20),
+        nullable=False
+    )
+
+    rating = db.Column(
+        db.Float,
+        default=0
+    )
+
+    bio = db.Column(
+        db.Text
+    )

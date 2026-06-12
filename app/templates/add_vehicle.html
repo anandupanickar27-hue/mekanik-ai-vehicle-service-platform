@@ -25,22 +25,6 @@
         <input type="text" name="registration_number" class="form-control">
     </div>
 
-    <div class="mb-3">
-    <label>Owner</label>
-
-    <select name="user_id" class="form-control">
-
-        {% for user in users %}
-
-        <option value="{{ user.id }}">
-            {{ user.name }}
-        </option>
-
-        {% endfor %}
-
-    </select>
-    </div>
-
     <button class="btn btn-primary">
         Save Vehicle
     </button>

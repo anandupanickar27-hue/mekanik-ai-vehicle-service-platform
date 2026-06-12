@@ -6,24 +6,66 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+    {% if current_user.role == "admin" %}
 
-    <nav class="navbar navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand" href="/">Mekanik</a>
+<a class="nav-link" href="/users">Users</a>
 
-        <div>
-            <a class="btn btn-outline-light btn-sm" href="/login">
-                Login
-            </a>
-
-            <a class="btn btn-light btn-sm" href="/register">
-                Register
-            </a>
-        </div>
-    </div>
-</nav>
+{% endif %}
+  
 
     <div class="container mt-4">
+        
+       {% if request.endpoint not in ["home", "login", "register"] %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+    <div class="container">
+
+        <a class="navbar-brand" href="/dashboard">
+            Mekanik
+        </a>
+
+        <div class="navbar-nav">
+
+            <a class="nav-link" href="/dashboard">
+                Dashboard
+            </a>
+
+            <a class="nav-link" href="/vehicles">
+                Vehicles
+            </a>
+
+            <a class="nav-link" href="/appointments">
+                Appointments
+            </a>
+
+            <a class="nav-link" href="/book-appointment">
+                Book Appointment
+            </a>
+
+            <a class="nav-link" href="/ ai-assistant">
+                AI Assistant
+            </a>
+
+            <a class="nav-link" href="/profile">
+                Profile
+            </a>
+
+             <a class="nav-link" href="/logout">
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+<br>
+
+{% endif %}
+
+<br>
 
         {% block content %}
         {% endblock %}
