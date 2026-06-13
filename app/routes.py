@@ -236,6 +236,7 @@ def book_appointment():
         vehicle_id = request.form["vehicle_id"]
         service_date = request.form["service_date"]
         issue_description = request.form["issue_description"]
+        mechanic_id = request.form["mechanic_id"]
         ai_recommendation = ask_gemini(
                             f"""
                             Vehicle Issue:
@@ -253,6 +254,7 @@ def book_appointment():
         appointment = Appointment(
             vehicle_id=vehicle_id,
             service_date=service_date,
+            mechanic_id=mechanic_id,
             issue_description=issue_description,
             category=category,
             ai_recommendation=ai_recommendation
@@ -262,14 +264,19 @@ def book_appointment():
         db.session.commit()
 
         return "Appointment booked successfully!"
+    
+    mechanics = User.query.filter_by(
+    role="mechanic"
+    ).all()
 
     vehicles = Vehicle.query.filter_by(
                 user_id=current_user.id
                 ).all()
 
     return render_template(
-        "book_appointment.html",
-        vehicles=vehicles
+    "book_appointment.html",
+    vehicles=vehicles,
+    mechanics=mechanics
     )
 
 @app.route("/appointments")
@@ -279,7 +286,9 @@ def appointments():
     search = request.args.get("search", "")
     status = request.args.get("status", "")
 
-    query = Appointment.query
+    query = Appointment.query.join(Vehicle).filter(
+        Vehicle.user_id == current_user.id
+    )
 
     if search:
         query = query.filter(
@@ -289,9 +298,7 @@ def appointments():
     if status:
         query = query.filter_by(status=status)
 
-    query = Appointment.query.join(Vehicle).filter(
-            Vehicle.user_id == current_user.id
-            )
+    appointments = query.all()
 
     return render_template(
         "appointments.html",
@@ -445,4 +452,124 @@ def complete_mechanic_profile():
 
     return render_template(
         "complete_mechanic_profile.html"
+    )
+
+@app.route("/edit-mechanic-profile", methods=["GET", "POST"])
+@login_required
+def edit_mechanic_profile():
+
+    if current_user.role != "mechanic":
+        return "Access Denied"
+
+    profile = current_user.mechanic_profile
+
+    if request.method == "POST":
+
+        profile.specialization = request.form["specialization"]
+        profile.experience = request.form["experience"]
+        profile.phone = request.form["phone"]
+        profile.bio = request.form["bio"]
+
+        db.session.commit()
+
+        return redirect(url_for("profile"))
+
+    return render_template(
+        "edit_mechanic_profile.html",
+        profile=profile
+    )
+
+@app.route("/mechanics")
+@login_required
+def mechanics():
+
+    mechanics = User.query.filter_by(
+        role="mechanic"
+    ).all()
+
+    return render_template(
+        "mechanics.html",
+        mechanics=mechanics
+    )
+
+@app.route("/my-jobs")
+@login_required
+def my_jobs():
+
+    jobs = Appointment.query.filter_by(
+        mechanic_id=current_user.id
+    ).all()
+
+    return render_template(
+        "my_jobs.html",
+        jobs=jobs
+    )
+
+@app.route("/update-job-status/<int:id>", methods=["GET", "POST"])
+@login_required
+def update_job_status(id):
+
+    job = Appointment.query.get(id)
+
+    if job.mechanic_id != current_user.id:
+        return "Access Denied"
+
+    if request.method == "POST":
+
+        job.status = request.form["status"]
+
+        db.session.commit()
+
+        return redirect(url_for("my_jobs"))
+
+    return render_template(
+        "update_job_status.html",
+        job=job
+    )
+
+@app.route("/mechanic/<int:id>")
+@login_required
+def mechanic_details(id):
+
+    mechanic = User.query.get(id)
+
+    if mechanic.role != "mechanic":
+        return "Mechanic not found"
+
+    return render_template(
+        "mechanic_details.html",
+        mechanic=mechanic
+    )
+
+@app.route("/review-mechanic/<int:id>", methods=["GET", "POST"])
+@login_required
+def review_mechanic(id):
+
+    if current_user.role != "customer":
+        return "Access Denied"
+
+    mechanic = User.query.get(id)
+
+    if request.method == "POST":
+
+        rating = request.form["rating"]
+        comment = request.form["comment"]
+
+        review = Review(
+            mechanic_id=mechanic.id,
+            customer_id=current_user.id,
+            rating=rating,
+            comment=comment
+        )
+
+        db.session.add(review)
+        db.session.commit()
+
+        return redirect(
+            url_for("mechanic_details", id=id)
+        )
+
+    return render_template(
+        "review_mechanic.html",
+        mechanic=mechanic
     )

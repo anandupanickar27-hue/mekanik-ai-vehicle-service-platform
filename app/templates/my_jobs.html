@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>My Jobs</h2>
+
+<table class="table">
+
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Vehicle</th>
+            <th>Issue</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for job in jobs %}
+
+        <tr>
+
+            <td>{{ job.id }}</td>
+
+            <td>
+                {{ job.vehicle.company }}
+                {{ job.vehicle.model }}
+            </td>
+
+            <td>{{ job.issue_description }}</td>
+
+            <td>{{ job.category }}</td>
+
+            <td>{{ job.status }}</td>
+
+            <td>
+                <a href="/update-job-status/{{ job.id }}"
+                class="btn btn-primary btn-sm">
+                    Update
+                </a>
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

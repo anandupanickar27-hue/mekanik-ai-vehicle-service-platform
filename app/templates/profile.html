@@ -4,8 +4,45 @@
 
 <h2>My Profile</h2>
 
-<p><strong>Name:</strong> {{ user.name }}</p>
+<div class="card p-4">
 
-<p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Name:</strong> {{ user.name }}</p>
+
+    <p><strong>Email:</strong> {{ user.email }}</p>
+
+    <p><strong>Role:</strong> {{ user.role }}</p>
+
+    {% if user.role == "mechanic" %}
+
+        <hr>
+
+        <p>
+            <strong>Specialization:</strong>
+            {{ user.mechanic_profile.specialization }}
+        </p>
+
+        <p>
+            <strong>Experience:</strong>
+            {{ user.mechanic_profile.experience }} Years
+        </p>
+
+        <p>
+            <strong>Phone:</strong>
+            {{ user.mechanic_profile.phone }}
+        </p>
+
+        <p>
+            <strong>Bio:</strong>
+            {{ user.mechanic_profile.bio }}
+        </p>
+
+        <a href="/edit-mechanic-profile"
+            class="btn btn-primary">
+            Edit Profile
+        </a>
+
+    {% endif %}
+
+</div>
 
 {% endblock %}

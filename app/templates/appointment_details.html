@@ -12,6 +12,16 @@
 
 <p><strong>Category:</strong> {{ appointment.category }}</p>
 
+<p>
+    <strong>Mechanic:</strong>
+    {{ appointment.mechanic.name }}
+</p>
+
+<p>
+    <strong>Specialization:</strong>
+    {{ appointment.mechanic.mechanic_profile.specialization }}
+</p>
+
 <p><strong>Status:</strong> {{ appointment.status }}</p>
 
 <p><strong>AI Recommendation:</strong></p>

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>{{ mechanic.name }}</h2>
+
+<div class="card p-4">
+
+    <p>
+        <strong>Specialization:</strong>
+        {{ mechanic.mechanic_profile.specialization }}
+    </p>
+
+    <p>
+        <strong>Experience:</strong>
+        {{ mechanic.mechanic_profile.experience }} Years
+    </p>
+
+    <p>
+        <strong>Phone:</strong>
+        {{ mechanic.mechanic_profile.phone }}
+    </p>
+
+    <p>
+        <strong>Bio:</strong>
+        {{ mechanic.mechanic_profile.bio }}
+    </p>
+
+    <p>
+        <strong>Rating:</strong>
+        {{ mechanic.mechanic_profile.rating }}
+    </p>
+
+</div>
+
+<hr>
+
+<h3>Reviews</h3>
+
+{% for review in mechanic.reviews_received %}
+
+<div class="card p-3 mb-2">
+
+    <p>
+        <strong>Rating:</strong>
+        ⭐ {{ review.rating }}/5
+    </p>
+
+    <p>
+        {{ review.comment }}
+    </p>
+
+</div>
+
+{% endfor %}
+
+{% if current_user.role == "customer" %}
+
+<a href="/review-mechanic/{{ mechanic.id }}"
+   class="btn btn-success">
+    Write Review
+</a>
+
+{% endif %}
+
+{% endblock %}

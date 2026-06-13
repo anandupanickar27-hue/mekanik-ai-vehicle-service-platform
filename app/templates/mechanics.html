@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Mechanics</h2>
+
+<div class="row">
+
+{% for mechanic in mechanics %}
+
+<div class="col-md-4 mb-3">
+
+    <div class="card p-3">
+
+       <h4>
+            <a href="/mechanic/{{ mechanic.id }}">
+                {{ mechanic.name }}
+            </a>
+        </h4>
+
+        <p>
+            {{ mechanic.mechanic_profile.specialization }}
+        </p>
+
+        <p>
+            {{ mechanic.mechanic_profile.experience }}
+            Years Experience
+        </p>
+
+        <p>
+            {{ mechanic.mechanic_profile.phone }}
+        </p>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}

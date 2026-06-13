@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Review {{ mechanic.name }}</h2>
+
+<form method="POST">
+
+    <div class="mb-3">
+        <label>Rating</label>
+
+        <select name="rating" class="form-select">
+            <option value="5">5</option>
+            <option value="4">4</option>
+            <option value="3">3</option>
+            <option value="2">2</option>
+            <option value="1">1</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Comment</label>
+
+        <textarea
+            name="comment"
+            class="form-control"></textarea>
+    </div>
+
+    <button class="btn btn-success">
+        Submit Review
+    </button>
+
+</form>
+
+{% endblock %}

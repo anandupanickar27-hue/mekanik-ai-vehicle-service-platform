@@ -53,6 +53,7 @@
             <th>Vehicle ID</th>
             <th>Service Date</th>
             <th>Issue</th>
+            <th>Mechanic</th>
             <th>Status</th>
             <th>Action</th>
         </tr>
@@ -68,6 +69,7 @@
             <td>{{ appointment.service_date }}</td>
             <td>{{ appointment.issue_description }}</td>
             <td>{{ appointment.status }}</td>
+            <td>{{ appointment.mechanic.name }}</td>
             <td>
                 <a href="/update-status/{{ appointment.id }}"
                 class="btn btn-warning btn-sm">

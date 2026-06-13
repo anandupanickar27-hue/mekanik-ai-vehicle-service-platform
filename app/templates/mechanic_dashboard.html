@@ -1,1 +1,33 @@
-<h1>Mechanic Dashboard</h1>
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Mechanic Dashboard</h2>
+
+<div class="card p-3">
+
+    <h4>{{ current_user.name }}</h4>
+
+    <p>
+        <strong>Specialization:</strong>
+        {{ current_user.mechanic_profile.specialization }}
+    </p>
+
+    <p>
+        <strong>Experience:</strong>
+        {{ current_user.mechanic_profile.experience }} Years
+    </p>
+
+    <p>
+        <strong>Phone:</strong>
+        {{ current_user.mechanic_profile.phone }}
+    </p>
+
+    <p>
+        <strong>Bio:</strong>
+        {{ current_user.mechanic_profile.bio }}
+    </p>
+
+</div>
+
+{% endblock %}

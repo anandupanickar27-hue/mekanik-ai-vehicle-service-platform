@@ -6,18 +6,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    {% if current_user.role == "admin" %}
 
-<a class="nav-link" href="/users">Users</a>
+<div class="container mt-4">
 
-{% endif %}
-  
+{% if request.endpoint not in ["home", "login", "register"] %}
 
-    <div class="container mt-4">
-        
-       {% if request.endpoint not in ["home", "login", "register"] %}
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded">
 
     <div class="container">
 
@@ -27,31 +21,63 @@
 
         <div class="navbar-nav">
 
-            <a class="nav-link" href="/dashboard">
-                Dashboard
-            </a>
+            {% if current_user.role == "customer" %}
 
-            <a class="nav-link" href="/vehicles">
-                Vehicles
-            </a>
+                <a class="nav-link" href="/dashboard">
+                    Dashboard
+                </a>
 
-            <a class="nav-link" href="/appointments">
-                Appointments
-            </a>
+                <a class="nav-link" href="/vehicles">
+                    Vehicles
+                </a>
 
-            <a class="nav-link" href="/book-appointment">
-                Book Appointment
-            </a>
+                <a class="nav-link" href="/appointments">
+                    Appointments
+                </a>
 
-            <a class="nav-link" href="/ ai-assistant">
-                AI Assistant
-            </a>
+                <a class="nav-link" href="/book-appointment">
+                    Book Appointment
+                </a>
+
+                <a class="nav-link" href="/mechanics">
+                    Mechanics
+                </a>
+
+                <a class="nav-link" href="/ai-assistant">
+                    AI Assistant
+                </a>
+
+            {% endif %}
+
+            {% if current_user.role == "mechanic" %}
+
+                <a class="nav-link" href="/mechanic-dashboard">
+                    Dashboard
+                </a>
+
+                <a class="nav-link" href="/my-jobs">
+                    My Jobs
+                </a>
+
+            {% endif %}
+
+            {% if current_user.role == "admin" %}
+
+                <a class="nav-link" href="/dashboard">
+                    Dashboard
+                </a>
+
+                <a class="nav-link" href="/users">
+                    Users
+                </a>
+
+            {% endif %}
 
             <a class="nav-link" href="/profile">
                 Profile
             </a>
 
-             <a class="nav-link" href="/logout">
+            <a class="nav-link" href="/logout">
                 Logout
             </a>
 
@@ -65,12 +91,10 @@
 
 {% endif %}
 
-<br>
+{% block content %}
+{% endblock %}
 
-        {% block content %}
-        {% endblock %}
-
-    </div>
+</div>
 
 </body>
 </html>

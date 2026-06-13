@@ -39,7 +39,20 @@ class User(UserMixin, db.Model):
     "MechanicProfile",
     backref="user",
     uselist=False
+    )
+
+    reviews = db.relationship(
+    "Review",
+    foreign_keys="Review.mechanic_id",
+    lazy=True
+    )
+
+    reviews_received = db.relationship(
+    "Review",
+    foreign_keys="Review.mechanic_id",
+    lazy=True
 )
+    
 
 
 class Vehicle(db.Model):
@@ -108,10 +121,15 @@ class Appointment(db.Model):
 
     ai_recommendation = db.Column(db.Text) 
 
-   # mechanic_id = db.Column(
-    #db.Integer,
-    #db.ForeignKey("mechanics.id")
-    #)
+    mechanic_id = db.Column(
+    db.Integer,
+    db.ForeignKey("users.id")
+    )
+
+    mechanic = db.relationship(
+    "User",
+    foreign_keys=[mechanic_id]
+    )
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -154,5 +172,35 @@ class MechanicProfile(db.Model):
     )
 
     bio = db.Column(
+        db.Text
+    )
+
+class Review(db.Model):
+
+    __tablename__ = "reviews"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    mechanic_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=False
+    )
+
+    customer_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=False
+    )
+
+    rating = db.Column(
+        db.Integer,
+        nullable=False
+    )
+
+    comment = db.Column(
         db.Text
     )
