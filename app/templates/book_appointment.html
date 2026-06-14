@@ -23,14 +23,6 @@
     </div>
 
     <div class="mb-3">
-        <label>Service Date</label>
-        <input
-            type="date"
-            name="service_date"
-            class="form-control">
-    </div>
-
-    <div class="mb-3">
         <label>Issue Description</label>
         <textarea
             name="issue_description"
@@ -38,25 +30,6 @@
             rows="4"></textarea>
     </div>
 
-    <div class="mb-3">
-
-    <label>Mechanic</label>
-
-    <select name="mechanic_id" class="form-select">
-
-        {% for mechanic in mechanics %}
-
-        <option value="{{ mechanic.id }}">
-            {{ mechanic.name }}
-            -
-            {{ mechanic.mechanic_profile.specialization }}
-        </option>
-
-        {% endfor %}
-
-    </select>
-
-</div>
 
     <button class="btn btn-primary">
         Book Appointment

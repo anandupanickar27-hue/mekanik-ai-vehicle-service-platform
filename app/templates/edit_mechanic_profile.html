@@ -8,10 +8,19 @@
 
     <div class="mb-3">
         <label>Specialization</label>
-        <input type="text"
-               name="specialization"
-               value="{{ profile.specialization }}"
-               class="form-control">
+        <select name="specialization" class="form-select">
+
+            <option value="Brake" {% if profile.specialization == "Brake" %}selected{% endif %}>Brake</option>
+
+            <option value="Engine" {% if profile.specialization == "Engine" %}selected{% endif %}>Engine</option>
+
+            <option value="Battery" {% if profile.specialization == "Battery" %}selected{% endif %}>Battery</option>
+
+            <option value="Tire" {% if profile.specialization == "Tire" %}selected{% endif %}>Tire</option>
+
+            <option value="General" {% if profile.specialization == "General" %}selected{% endif %}>General Service</option>
+
+        </select>
     </div>
 
     <div class="mb-3">

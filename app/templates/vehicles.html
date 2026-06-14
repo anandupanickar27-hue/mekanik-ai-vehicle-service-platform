@@ -17,19 +17,21 @@
     </thead>
 
     <tbody>
-            {% for vehicle in vehicles %}
 
-            <tr>
+        {% for vehicle in vehicles %}
+
+        <tr>
             <td>{{ vehicle.id }}</td>
             <td>{{ vehicle.company }}</td>
             <td>{{ vehicle.model }}</td>
             <td>{{ vehicle.year }}</td>
             <td>{{ vehicle.registration_number }}</td>
-            </tr>
-            
-       </tbody>
-    </table> 
+        </tr>
 
-            {% endfor %}
+        {% endfor %}
+
+    </tbody>
+
+</table>
 
 {% endblock %}

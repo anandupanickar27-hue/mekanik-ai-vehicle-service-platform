@@ -93,11 +93,6 @@ class Appointment(db.Model):
         primary_key=True
     )
 
-    service_date = db.Column(
-        db.String(20),
-        nullable=False
-    )
-
     issue_description = db.Column(
         db.Text,
         nullable=False

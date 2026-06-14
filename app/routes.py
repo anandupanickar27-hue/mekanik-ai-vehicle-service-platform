@@ -210,7 +210,9 @@ def add_vehicle():
 
         db.session.add(vehicle)
         db.session.commit()
-        return "Vehicle saved successfully!"
+        return redirect(
+            url_for("vehicles")
+        )
 
     return render_template(
         "add_vehicle.html",
@@ -234,49 +236,46 @@ def book_appointment():
     if request.method == "POST":
 
         vehicle_id = request.form["vehicle_id"]
-        service_date = request.form["service_date"]
         issue_description = request.form["issue_description"]
-        mechanic_id = request.form["mechanic_id"]
+
         ai_recommendation = ask_gemini(
-                            f"""
-                            Vehicle Issue:
-                            {issue_description}
+            f"""
+            Vehicle Issue:
+            {issue_description}
 
-                            Give:
-                            - Possible cause
-                            - Recommendation
+            Give:
+            - Possible cause
+            - Recommendation
 
-                            Keep it short.
-                            """
-                            )
+            Keep it short.
+            """
+        )
+
         category = categorize_issue(issue_description)
 
-        appointment = Appointment(
+        recommended_mechanics = User.query.join(
+            MechanicProfile
+        ).filter(
+            User.role == "mechanic",
+            MechanicProfile.specialization == category
+        ).all()
+
+        return render_template(
+            "recommended_mechanics.html",
+            mechanics=recommended_mechanics,
             vehicle_id=vehicle_id,
-            service_date=service_date,
-            mechanic_id=mechanic_id,
             issue_description=issue_description,
             category=category,
             ai_recommendation=ai_recommendation
         )
 
-        db.session.add(appointment)
-        db.session.commit()
-
-        return "Appointment booked successfully!"
-    
-    mechanics = User.query.filter_by(
-    role="mechanic"
+    vehicles = Vehicle.query.filter_by(
+        user_id=current_user.id
     ).all()
 
-    vehicles = Vehicle.query.filter_by(
-                user_id=current_user.id
-                ).all()
-
     return render_template(
-    "book_appointment.html",
-    vehicles=vehicles,
-    mechanics=mechanics
+        "book_appointment.html",
+        vehicles=vehicles
     )
 
 @app.route("/appointments")
@@ -550,26 +549,81 @@ def review_mechanic(id):
 
     mechanic = User.query.get(id)
 
+    completed_job = Appointment.query.filter_by(
+    mechanic_id=mechanic.id,
+    status="Completed"
+    ).join(Vehicle).filter(
+    Vehicle.user_id == current_user.id
+    ).first()
+
+    if not completed_job:
+        return "You can review only after a completed service"
+
     if request.method == "POST":
 
-        rating = request.form["rating"]
+        rating = int(request.form["rating"])
         comment = request.form["comment"]
 
+        existing_review = Review.query.filter_by(
+        mechanic_id=mechanic.id,
+        customer_id=current_user.id
+        ).first()
+
+        if existing_review:
+            return "You have already reviewed this mechanic"
+
         review = Review(
-            mechanic_id=mechanic.id,
-            customer_id=current_user.id,
-            rating=rating,
-            comment=comment
+        mechanic_id=mechanic.id,
+        customer_id=current_user.id,
+        rating=rating,
+        comment=comment
         )
 
         db.session.add(review)
         db.session.commit()
 
-        return redirect(
-            url_for("mechanic_details", id=id)
+
+        reviews = Review.query.filter_by(
+        mechanic_id=mechanic.id
+        ).all()
+
+        total_rating = sum(
+        review.rating for review in reviews
         )
+
+        average_rating = total_rating / len(reviews)
+
+        mechanic.mechanic_profile.rating = round(
+        average_rating,
+        1
+        )
+
+        db.session.commit()
+
+        return redirect(
+        url_for("mechanic_details", id=id)
+    )
 
     return render_template(
         "review_mechanic.html",
         mechanic=mechanic
+    )
+
+@app.route("/confirm-appointment", methods=["POST"])
+@login_required
+def confirm_appointment():
+
+    appointment = Appointment(
+        vehicle_id=request.form["vehicle_id"],
+        mechanic_id=request.form["mechanic_id"],
+        issue_description=request.form["issue_description"],
+        category=request.form["category"],
+        ai_recommendation=request.form["ai_recommendation"]
+    )
+
+    db.session.add(appointment)
+    db.session.commit()
+
+    return redirect(
+        url_for("appointments")
     )

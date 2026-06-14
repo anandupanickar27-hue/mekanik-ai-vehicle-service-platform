@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Recommended Mechanics</h2>
+
+<p>
+    <strong>Detected Category:</strong>
+    {{ category }}
+</p>
+
+<p>
+    <strong>AI Recommendation:</strong>
+    {{ ai_recommendation }}
+</p>
+
+<hr>
+
+{% for mechanic in mechanics %}
+
+<div class="card p-3 mb-3">
+
+    <h4>{{ mechanic.name }}</h4>
+
+    <p>
+        <strong>Specialization:</strong>
+        {{ mechanic.mechanic_profile.specialization }}
+    </p>
+
+    <p>
+    <strong>Rating:</strong>
+    ⭐ {{ mechanic.mechanic_profile.rating }}
+    </p>
+
+    <p>
+        <strong>Experience:</strong>
+        {{ mechanic.mechanic_profile.experience }} Years
+    </p>
+
+    <form method="POST" action="/confirm-appointment">
+
+        <input
+            type="hidden"
+            name="vehicle_id"
+            value="{{ vehicle_id }}">
+
+
+        <input
+            type="hidden"
+            name="issue_description"
+            value="{{ issue_description }}">
+
+        <input
+            type="hidden"
+            name="category"
+            value="{{ category }}">
+
+        <input
+            type="hidden"
+            name="ai_recommendation"
+            value="{{ ai_recommendation }}">
+
+        <input
+            type="hidden"
+            name="mechanic_id"
+            value="{{ mechanic.id }}">
+
+        <button class="btn btn-success">
+            Select Mechanic
+        </button>
+
+    </form>
+
+</div>
+
+{% endfor %}
+
+{% endblock %}

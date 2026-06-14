@@ -41,6 +41,27 @@
             Edit Profile
         </a>
 
+        <hr>
+
+<h3>My Reviews</h3>
+
+{% for review in user.reviews_received %}
+
+<div class="card p-3 mb-2">
+
+    <p>
+        <strong>Rating:</strong>
+        ⭐ {{ review.rating }}/5
+    </p>
+
+    <p>
+        {{ review.comment }}
+    </p>
+
+</div>
+
+{% endfor %}
+
     {% endif %}
 
 </div>
