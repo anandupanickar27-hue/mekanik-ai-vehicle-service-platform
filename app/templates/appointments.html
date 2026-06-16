@@ -43,6 +43,7 @@
     Completed
 </a>
 
+
 <br><br>
 
 <table class="table">
@@ -51,7 +52,6 @@
         <tr>
             <th>ID</th>
             <th>Vehicle ID</th>
-            <th>Service Date</th>
             <th>Issue</th>
             <th>Mechanic</th>
             <th>Status</th>
@@ -66,23 +66,23 @@
         <tr>
             <td>{{ appointment.id }}</td>
             <td>{{ appointment.vehicle_id }}</td>
-            <td>{{ appointment.service_date }}</td>
             <td>{{ appointment.issue_description }}</td>
-            <td>{{ appointment.status }}</td>
             <td>{{ appointment.mechanic.name }}</td>
-            <td>
-                <a href="/update-status/{{ appointment.id }}"
-                class="btn btn-warning btn-sm">
-                Update Status
-                </a>
-            </td>
+            <td>{{ appointment.status }}</td>
             <td>
                 <a href="/appointment/{{ appointment.id }}"
                 class="btn btn-info btn-sm">
                 View
                 </a>
             </td>
+            <td>
+                <a href="/cancel-appointment/{{ appointment.id }}"
+                class="btn btn-danger">
+                    Cancel
+                </a>
+            </td>
         </tr>
+            
 
         {% endfor %}
 

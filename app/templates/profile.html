@@ -10,7 +10,18 @@
 
     <p><strong>Email:</strong> {{ user.email }}</p>
 
+    <p><strong>Phone:</strong> {{ user.phone or "Not Added" }}</p>
+
     <p><strong>Role:</strong> {{ user.role }}</p>
+
+    {% if user.role == "customer" %}
+
+    <a href="/edit-profile"
+       class="btn btn-primary">
+       Edit Profile
+    </a>
+
+    {% endif %}
 
     {% if user.role == "mechanic" %}
 
@@ -27,7 +38,7 @@
         </p>
 
         <p>
-            <strong>Phone:</strong>
+            <strong>Mechanic Phone:</strong>
             {{ user.mechanic_profile.phone }}
         </p>
 
@@ -36,31 +47,33 @@
             {{ user.mechanic_profile.bio }}
         </p>
 
+        
+
         <a href="/edit-mechanic-profile"
-            class="btn btn-primary">
-            Edit Profile
+           class="btn btn-primary">
+           Edit Profile
         </a>
 
         <hr>
 
-<h3>My Reviews</h3>
+        <h3>My Reviews</h3>
 
-{% for review in user.reviews_received %}
+        {% for review in user.reviews_received %}
 
-<div class="card p-3 mb-2">
+        <div class="card p-3 mb-2">
 
-    <p>
-        <strong>Rating:</strong>
-        ⭐ {{ review.rating }}/5
-    </p>
+            <p>
+                <strong>Rating:</strong>
+                ⭐ {{ review.rating }}/5
+            </p>
 
-    <p>
-        {{ review.comment }}
-    </p>
+            <p>
+                {{ review.comment }}
+            </p>
 
-</div>
+        </div>
 
-{% endfor %}
+        {% endfor %}
 
     {% endif %}
 

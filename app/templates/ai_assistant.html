@@ -6,12 +6,17 @@
 
 <form method="POST">
 
-    <textarea
-        name="issue"
-        class="form-control"
-        rows="5"></textarea>
+    <div class="mb-3">
 
-    <br>
+        <label>Describe Your Vehicle Issue</label>
+
+        <textarea
+            name="issue"
+            class="form-control"
+            rows="5"
+            required></textarea>
+
+    </div>
 
     <button class="btn btn-primary">
         Analyze Issue
@@ -21,9 +26,96 @@
 
 {% if response %}
 
-<div class="alert alert-info mt-3">
-    {{ response }}
+<div class="alert alert-info mt-4">
+
+    <h5>AI Analysis</h5>
+
+    <p>{{ response }}</p>
+
 </div>
+
+<h4 class="mt-4">Recommended Mechanics</h4>
+
+{% if mechanics %}
+
+    {% for mechanic in mechanics %}
+
+    <div class="card p-3 mb-3">
+
+        <h5>{{ mechanic.name }}</h5>
+
+        <p>
+            <strong>Specialization:</strong>
+            {{ mechanic.mechanic_profile.specialization }}
+        </p>
+
+        <p>
+            <strong>Experience:</strong>
+            {{ mechanic.mechanic_profile.experience }}
+            Years
+        </p>
+
+        <p>
+            <strong>Rating:</strong>
+            ⭐ {{ mechanic.mechanic_profile.rating }}
+        </p>
+
+        <form method="POST" action="/create-appointment">
+
+            <input
+                type="hidden"
+                name="mechanic_id"
+                value="{{ mechanic.id }}">
+
+            <input
+                type="hidden"
+                name="issue_description"
+                value="{{ request.form['issue'] }}">
+
+            <input
+                type="hidden"
+                name="ai_recommendation"
+                value="{{ response }}">
+
+            <div class="mb-3">
+
+                <label>Select Vehicle</label>
+
+                <select
+                    name="vehicle_id"
+                    class="form-select"
+                    required>
+
+                    {% for vehicle in vehicles %}
+
+                    <option value="{{ vehicle.id }}">
+                        {{ vehicle.company }}
+                        {{ vehicle.model }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+            <button class="btn btn-success">
+                Create Appointment
+            </button>
+
+        </form>
+
+    </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <div class="alert alert-warning">
+        No matching mechanics found.
+    </div>
+
+{% endif %}
 
 {% endif %}
 

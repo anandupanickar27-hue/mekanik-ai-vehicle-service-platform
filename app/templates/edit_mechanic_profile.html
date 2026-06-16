@@ -2,47 +2,122 @@
 
 {% block content %}
 
-<h2>Edit Mechanic Profile</h2>
+<h2>Edit Profile</h2>
 
 <form method="POST">
 
+    <h4>User Information</h4>
+
     <div class="mb-3">
+
+        <label>Name</label>
+
+        <input
+            type="text"
+            name="name"
+            value="{{ user.name }}"
+            class="form-control">
+
+    </div>
+
+    <div class="mb-3">
+
+        <label>Email</label>
+
+        <input
+            type="email"
+            name="email"
+            value="{{ user.email }}"
+            class="form-control">
+
+    </div>
+
+    <div class="mb-3">
+
+        <label>Phone</label>
+
+        <input
+            type="text"
+            name="user_phone"
+            value="{{ user.phone }}"
+            class="form-control">
+
+    </div>
+
+    <hr>
+
+    <h4>Mechanic Information</h4>
+
+    <div class="mb-3">
+
         <label>Specialization</label>
-        <select name="specialization" class="form-select">
 
-            <option value="Brake" {% if profile.specialization == "Brake" %}selected{% endif %}>Brake</option>
+        <select
+            name="specialization"
+            class="form-select">
 
-            <option value="Engine" {% if profile.specialization == "Engine" %}selected{% endif %}>Engine</option>
+            <option value="Brake"
+            {% if profile.specialization == "Brake" %}selected{% endif %}>
+            Brake
+            </option>
 
-            <option value="Battery" {% if profile.specialization == "Battery" %}selected{% endif %}>Battery</option>
+            <option value="Engine"
+            {% if profile.specialization == "Engine" %}selected{% endif %}>
+            Engine
+            </option>
 
-            <option value="Tire" {% if profile.specialization == "Tire" %}selected{% endif %}>Tire</option>
+            <option value="Battery"
+            {% if profile.specialization == "Battery" %}selected{% endif %}>
+            Battery
+            </option>
 
-            <option value="General" {% if profile.specialization == "General" %}selected{% endif %}>General Service</option>
+            <option value="Tire"
+            {% if profile.specialization == "Tire" %}selected{% endif %}>
+            Tire
+            </option>
+
+            <option value="General"
+            {% if profile.specialization == "General" %}selected{% endif %}>
+            General Service
+            </option>
 
         </select>
+
     </div>
 
     <div class="mb-3">
+
         <label>Experience</label>
-        <input type="number"
-               name="experience"
-               value="{{ profile.experience }}"
-               class="form-control">
+
+        <input
+            type="number"
+            name="experience"
+            value="{{ profile.experience }}"
+            class="form-control">
+
     </div>
 
     <div class="mb-3">
-        <label>Phone</label>
-        <input type="text"
-               name="phone"
-               value="{{ profile.phone }}"
-               class="form-control">
+
+        <label>Mechanic Phone</label>
+
+        <input
+            type="text"
+            name="mechanic_phone"
+            value="{{ profile.phone }}"
+            class="form-control">
+
     </div>
 
     <div class="mb-3">
+
         <label>Bio</label>
-        <textarea name="bio"
-                  class="form-control">{{ profile.bio }}</textarea>
+
+        <textarea
+            name="bio"
+            class="form-control"
+            rows="4">{{ profile.bio }}</textarea>
+
     </div>
 
     <button class="btn btn-primary">

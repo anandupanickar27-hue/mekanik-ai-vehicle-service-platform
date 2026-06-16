@@ -26,6 +26,12 @@
             <td>{{ vehicle.model }}</td>
             <td>{{ vehicle.year }}</td>
             <td>{{ vehicle.registration_number }}</td>
+            <td>
+                <a href="/delete-vehicle/{{ vehicle.id }}"
+                    class="btn btn-danger btn-sm">
+                    Delete
+                </a>
+            </td>
         </tr>
 
         {% endfor %}

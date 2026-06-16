@@ -4,6 +4,25 @@
 
 <h2>Mechanics</h2>
 
+<form method="GET" class="mb-3">
+
+    <div class="input-group">
+
+        <input
+            type="text"
+            name="search"
+            value="{{ search }}"
+            class="form-control"
+            placeholder="Search by name or specialization">
+
+        <button class="btn btn-primary">
+            Search
+        </button>
+
+    </div>
+
+</form>
+
 <div class="row">
 
 {% for mechanic in mechanics %}
@@ -12,24 +31,49 @@
 
     <div class="card p-3">
 
-       <h4>
+        <h4>
             <a href="/mechanic/{{ mechanic.id }}">
                 {{ mechanic.name }}
             </a>
         </h4>
 
         <p>
+            <strong>Specialization:</strong>
             {{ mechanic.mechanic_profile.specialization }}
         </p>
 
         <p>
+            <strong>Experience:</strong>
             {{ mechanic.mechanic_profile.experience }}
-            Years Experience
+            Years
         </p>
 
         <p>
+            <strong>Available Slots:</strong>
+            {{ mechanic.mechanic_profile.available_slots }}
+        </p>
+
+        <p>
+            <strong>Phone:</strong>
             {{ mechanic.mechanic_profile.phone }}
         </p>
+
+        <p>
+            <strong>Rating:</strong>
+            ⭐ {{ mechanic.mechanic_profile.rating }}
+        </p>
+
+        <a
+            href="/mechanic/{{ mechanic.id }}"
+            class="btn btn-primary">
+            View Profile
+        </a>
+        <p></p>
+        <a
+            href="/book-with-mechanic/{{ mechanic.id }}"
+            class="btn btn-success">
+            Book Appointment
+        </a>
 
     </div>
 

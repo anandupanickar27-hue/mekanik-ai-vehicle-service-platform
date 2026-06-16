@@ -30,4 +30,18 @@
     {{ appointment.ai_recommendation }}
 </div>
 
+{% if appointment.mechanic_notes %}
+
+<div class="card p-3 mt-3">
+
+    <h5>Mechanic Notes</h5>
+
+    <p>
+        {{ appointment.mechanic_notes }}
+    </p>
+
+</div>
+
+{% endif %}
+
 {% endblock %}

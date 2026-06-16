@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Book Appointment</h2>
+
+<div class="card p-3 mb-3">
+
+    <h4>{{ mechanic.name }}</h4>
+
+    <p>
+        {{ mechanic.mechanic_profile.specialization }}
+    </p>
+
+    <p>
+        Available Slots:
+        {{ mechanic.mechanic_profile.available_slots }}
+    </p>
+
+</div>
+
+<form method="POST">
+
+    <div class="mb-3">
+
+        <label>Select Vehicle</label>
+
+        <select
+            name="vehicle_id"
+            class="form-select">
+
+            {% for vehicle in vehicles %}
+
+            <option value="{{ vehicle.id }}">
+                {{ vehicle.company }}
+                {{ vehicle.model }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    <div class="mb-3">
+
+        <label>Reason</label>
+
+        <textarea
+            name="issue_description"
+            class="form-control"
+            rows="4"
+            placeholder="General checkup, oil change, maintenance, etc."
+            required></textarea>
+
+    </div>
+
+    <button class="btn btn-success">
+        Create Appointment
+    </button>
+
+</form>
+
+{% endblock %}

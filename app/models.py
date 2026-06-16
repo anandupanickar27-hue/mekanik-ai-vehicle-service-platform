@@ -23,6 +23,10 @@ class User(UserMixin, db.Model):
         nullable=False
     )
 
+    phone = db.Column(
+    db.String(15)
+    )
+
     vehicles = db.relationship(
         "Vehicle",
         backref="owner",
@@ -110,6 +114,10 @@ class Appointment(db.Model):
         nullable=False
     )
 
+    mechanic_notes = db.Column(
+    db.Text
+    )
+
     category = db.Column(
     db.String(50)
     )   
@@ -159,6 +167,11 @@ class MechanicProfile(db.Model):
     phone = db.Column(
         db.String(20),
         nullable=False
+    )
+
+    available_slots = db.Column(
+    db.Integer,
+    default=5
     )
 
     rating = db.Column(

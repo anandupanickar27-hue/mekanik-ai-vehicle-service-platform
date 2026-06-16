@@ -1,7 +1,7 @@
 from flask import render_template, request
 from app import app
 
-from app.models import User, Vehicle, Appointment, MechanicProfile
+from app.models import User, Vehicle, Appointment, MechanicProfile, Review
 from flask_login import current_user
 from app import db
 from flask import redirect, url_for
@@ -295,7 +295,9 @@ def appointments():
         )
 
     if status:
-        query = query.filter_by(status=status)
+        query = query.filter(
+            Appointment.status == status
+        )
 
     appointments = query.all()
 
@@ -374,6 +376,8 @@ def dashboard():
 def ai_assistant():
 
     response = None
+    mechanics = []
+    vehicles = []
 
     if request.method == "POST":
 
@@ -395,9 +399,24 @@ def ai_assistant():
             """
         )
 
+        category = categorize_issue(issue)
+
+        mechanics = User.query.join(
+            MechanicProfile
+        ).filter(
+            User.role == "mechanic",
+            MechanicProfile.specialization == category
+        ).all()
+
+        vehicles = Vehicle.query.filter_by(
+            user_id=current_user.id
+        ).all()
+
     return render_template(
         "ai_assistant.html",
-        response=response
+        response=response,
+        mechanics=mechanics,
+        vehicles=vehicles
     )
 
 @app.route("/logout")
@@ -464,9 +483,13 @@ def edit_mechanic_profile():
 
     if request.method == "POST":
 
+        current_user.name = request.form["name"]
+        current_user.email = request.form["email"]
+        current_user.phone = request.form["user_phone"]
+
         profile.specialization = request.form["specialization"]
         profile.experience = request.form["experience"]
-        profile.phone = request.form["phone"]
+        profile.phone = request.form["mechanic_phone"]
         profile.bio = request.form["bio"]
 
         db.session.commit()
@@ -475,6 +498,7 @@ def edit_mechanic_profile():
 
     return render_template(
         "edit_mechanic_profile.html",
+        user=current_user,
         profile=profile
     )
 
@@ -482,13 +506,29 @@ def edit_mechanic_profile():
 @login_required
 def mechanics():
 
-    mechanics = User.query.filter_by(
+    search = request.args.get("search", "")
+
+    query = User.query.filter_by(
         role="mechanic"
-    ).all()
+    )
+
+    if search:
+
+        query = query.join(
+            MechanicProfile
+        ).filter(
+            or_(
+                User.name.contains(search),
+                MechanicProfile.specialization.contains(search)
+            )
+        )
+
+    mechanics = query.all()
 
     return render_template(
         "mechanics.html",
-        mechanics=mechanics
+        mechanics=mechanics,
+        search=search
     )
 
 @app.route("/my-jobs")
@@ -504,27 +544,7 @@ def my_jobs():
         jobs=jobs
     )
 
-@app.route("/update-job-status/<int:id>", methods=["GET", "POST"])
-@login_required
-def update_job_status(id):
 
-    job = Appointment.query.get(id)
-
-    if job.mechanic_id != current_user.id:
-        return "Access Denied"
-
-    if request.method == "POST":
-
-        job.status = request.form["status"]
-
-        db.session.commit()
-
-        return redirect(url_for("my_jobs"))
-
-    return render_template(
-        "update_job_status.html",
-        job=job
-    )
 
 @app.route("/mechanic/<int:id>")
 @login_required
@@ -626,4 +646,145 @@ def confirm_appointment():
 
     return redirect(
         url_for("appointments")
+    )
+
+@app.route("/update-job-status/<int:id>", methods=["GET", "POST"])
+@login_required
+def update_job_status(id):
+
+    job = Appointment.query.get(id)
+
+    if job.mechanic_id != current_user.id:
+        return "Access Denied"
+
+    if request.method == "POST":
+
+        old_status = job.status
+        new_status = request.form["status"]
+
+        job.status = new_status
+        job.mechanic_notes = request.form[
+        "mechanic_notes"
+        ]
+
+        if (
+            old_status != "Completed"
+            and new_status == "Completed"
+        ):
+
+            mechanic = User.query.get(
+                job.mechanic_id
+            )
+
+            mechanic.mechanic_profile.available_slots += 1
+
+        db.session.commit()
+
+        return redirect(
+            url_for("my_jobs")
+        )
+
+    return render_template(
+        "update_job_status.html",
+        job=job
+    )
+
+@app.route("/edit-profile", methods=["GET", "POST"])
+@login_required
+def edit_profile():
+
+    if request.method == "POST":
+
+        current_user.name = request.form["name"]
+        current_user.email = request.form["email"]
+        current_user.phone = request.form["phone"]
+
+        db.session.commit()
+
+        return redirect(
+            url_for("profile")
+        )
+
+    return render_template(
+        "edit_profile.html",
+        user=current_user
+    )
+
+@app.route("/book-with-mechanic/<int:id>", methods=["GET", "POST"])
+@login_required
+def book_with_mechanic(id):
+
+    mechanic = User.query.get_or_404(id)
+
+    if request.method == "POST":
+
+        appointment = Appointment(
+            vehicle_id=request.form["vehicle_id"],
+            mechanic_id=mechanic.id,
+            issue_description=request.form["issue_description"],
+            category="General Service",
+            ai_recommendation="Booked directly from mechanic page",
+            status="Pending"
+        )
+
+        db.session.add(appointment)
+
+        mechanic.mechanic_profile.available_slots -= 1
+
+        db.session.commit()
+
+        return redirect(
+            url_for("appointments")
+        )
+
+    vehicles = Vehicle.query.filter_by(
+        user_id=current_user.id
+    ).all()
+
+    return render_template(
+        "book_with_mechanic.html",
+        mechanic=mechanic,
+        vehicles=vehicles
+    )
+
+@app.route("/cancel-appointment/<int:id>")
+@login_required
+def cancel_appointment(id):
+
+    appointment = Appointment.query.get_or_404(id)
+
+    if appointment.vehicle.user_id != current_user.id:
+        return "Access Denied"
+
+    if appointment.status == "Completed":
+        return "Completed appointments cannot be cancelled"
+
+    mechanic = User.query.get(
+        appointment.mechanic_id
+    )
+
+    if mechanic:
+        mechanic.mechanic_profile.available_slots += 1
+
+    db.session.delete(appointment)
+    db.session.commit()
+
+    return redirect(
+        url_for("appointments")
+    )
+
+@app.route("/delete-vehicle/<int:id>")
+@login_required
+def delete_vehicle(id):
+
+    vehicle = Vehicle.query.get_or_404(id)
+
+    if vehicle.user_id != current_user.id:
+        return "Access Denied"
+
+    db.session.delete(vehicle)
+    db.session.commit()
+
+    return redirect(
+        url_for("vehicles")
     )
