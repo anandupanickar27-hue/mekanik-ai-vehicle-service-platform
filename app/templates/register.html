@@ -2,72 +2,148 @@
 
 {% block content %}
 
-<div class="row justify-content-center">
+<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
 
-    <div class="col-md-5">
+    <div class="col-lg-6 col-md-8">
 
-        <div class="card shadow p-4">
+        <div class="card shadow-lg border-0">
 
-            <h2 class="text-center mb-4">Register</h2>
+            <div class="card-header bg-success text-white text-center">
 
-            <form method="POST">
+                <h2 class="mb-0">
 
-                <div class="mb-3">
-                    <label>Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        class="form-control"
-                        required>
+                    <i class="bi bi-person-plus-fill"></i>
+                    Create Your Account
+
+                </h2>
+
+                <small>
+                    Join Mekanik and start managing your vehicle services.
+                </small>
+
+            </div>
+
+            <div class="card-body p-4">
+
+                <div class="text-center mb-4">
+
+                    <i class="bi bi-car-front-fill text-success"
+                       style="font-size:4rem;"></i>
+
                 </div>
 
-                <div class="mb-3">
-                    <label>Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        class="form-control"
-                        required>
-                </div>
+                <form method="POST">
 
-                <div class="mb-3">
-                    <label>Password</label>
-                    <input
-                        type="password"
-                        name="password"
-                        class="form-control"
-                        required>
-                </div>
+                    <div class="mb-3">
 
-                <div class="mb-3">
-                    <label>Account Type</label>
-                    <select
-                        name="role"
-                        class="form-select">
+                        <label class="form-label fw-bold">
 
-                        <option value="customer">
-                            Customer
-                        </option>
+                            <i class="bi bi-person-fill"></i>
+                            Full Name
 
-                        <option value="mechanic">
-                            Mechanic
-                        </option>
+                        </label>
 
-                    </select>
-                </div>
+                        <input
+                            type="text"
+                            name="name"
+                            class="form-control"
+                            placeholder="Enter your full name"
+                            required>
 
-                <button
-                    type="submit"
-                    class="btn btn-success w-100">
-                    Register
-                </button>
+                    </div>
 
-            </form>
+                    <div class="mb-3">
 
-            <p class="text-center mt-3">
-                Already have an account?
-                <a href="/login">Login</a>
-            </p>
+                        <label class="form-label fw-bold">
+
+                            <i class="bi bi-envelope-fill"></i>
+                            Email Address
+
+                        </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            class="form-control"
+                            placeholder="Enter your email"
+                            required>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-bold">
+
+                            <i class="bi bi-lock-fill"></i>
+                            Password
+
+                        </label>
+
+                        <input
+                            type="password"
+                            name="password"
+                            class="form-control"
+                            placeholder="Create a strong password"
+                            required>
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <label class="form-label fw-bold">
+
+                            <i class="bi bi-person-badge-fill"></i>
+                            Account Type
+
+                        </label>
+
+                        <select
+                            name="role"
+                            class="form-select">
+
+                            <option value="customer">
+
+                                🚗 Customer
+
+                            </option>
+
+                            <option value="mechanic">
+
+                                👨‍🔧 Mechanic
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="btn btn-success w-100">
+
+                        <i class="bi bi-check-circle-fill"></i>
+                        Create Account
+
+                    </button>
+
+                </form>
+
+                <hr>
+
+                <p class="text-center mb-0">
+
+                    Already have an account?
+
+                    <a href="/login"
+                       class="fw-bold text-decoration-none">
+
+                        Login Here
+
+                    </a>
+
+                </p>
+
+            </div>
 
         </div>
 

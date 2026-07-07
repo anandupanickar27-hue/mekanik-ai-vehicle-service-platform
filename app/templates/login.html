@@ -2,46 +2,101 @@
 
 {% block content %}
 
-<div class="row justify-content-center">
+<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
 
-    <div class="col-md-5">
+    <div class="col-lg-5 col-md-7">
 
-        <div class="card shadow p-4">
+        <div class="card shadow-lg border-0">
 
-            <h2 class="text-center mb-4">Login</h2>
+            <div class="card-header bg-primary text-white text-center">
 
-            <form method="POST">
+                <h2 class="mb-0">
 
-                <div class="mb-3">
-                    <label>Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        class="form-control"
-                        required>
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    Welcome Back
+
+                </h2>
+
+                <small>
+                    Login to continue using Mekanik
+                </small>
+
+            </div>
+
+            <div class="card-body p-4">
+
+                <div class="text-center mb-4">
+
+                    <i class="bi bi-car-front-fill text-primary"
+                       style="font-size:4rem;"></i>
+
                 </div>
 
-                <div class="mb-3">
-                    <label>Password</label>
-                    <input
-                        type="password"
-                        name="password"
-                        class="form-control"
-                        required>
-                </div>
+                <form method="POST">
 
-                <button
-                    type="submit"
-                    class="btn btn-primary w-100">
-                    Login
-                </button>
+                    <div class="mb-3">
 
-            </form>
+                        <label class="form-label fw-bold">
 
-            <p class="text-center mt-3">
-                Not a user?
-                <a href="/register">Register</a>
-            </p>
+                            <i class="bi bi-envelope-fill"></i>
+                            Email Address
+
+                        </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            class="form-control"
+                            placeholder="Enter your email"
+                            required>
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <label class="form-label fw-bold">
+
+                            <i class="bi bi-lock-fill"></i>
+                            Password
+
+                        </label>
+
+                        <input
+                            type="password"
+                            name="password"
+                            class="form-control"
+                            placeholder="Enter your password"
+                            required>
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-100">
+
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        Login
+
+                    </button>
+
+                </form>
+
+                <hr>
+
+                <p class="text-center mb-0">
+
+                    Don't have an account?
+
+                    <a href="/register"
+                       class="fw-bold text-decoration-none">
+
+                        Register Here
+
+                    </a>
+
+                </p>
+
+            </div>
 
         </div>
 

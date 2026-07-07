@@ -2,21 +2,120 @@
 
 {% block content %}
 
-<div class="container mt-5 text-center">
+<div class="container py-5">
 
-    <h1 class="display-4">Welcome to Mekanik</h1>
+    <div class="row align-items-center">
 
-    <p class="lead">
-        AI Powered Vehicle Service Platform
-    </p>
+        <div class="col-lg-6">
 
-    <a href="/login" class="btn btn-primary btn-lg">
-        Login
-    </a>
+            <h1 class="display-3 fw-bold mb-3">
+                🚗 Mekanik
+            </h1>
 
-    <a href="/register" class="btn btn-success btn-lg">
-        Register
-    </a>
+            <h3 class="text-primary mb-4">
+                AI Assisted Vehicle Service Platform
+            </h3>
+
+            <p class="lead text-muted">
+
+                Diagnose vehicle issues using AI, discover the best mechanics,
+                book appointments, and track your vehicle's service journey—
+                all from one platform.
+
+            </p>
+
+            <div class="mt-4">
+
+                <a href="/login"
+                   class="btn btn-primary btn-lg me-3">
+
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    Login
+
+                </a>
+
+                <a href="/register"
+                   class="btn btn-success btn-lg">
+
+                    <i class="bi bi-person-plus-fill"></i>
+                    Register
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-6 text-center">
+
+            <i class="bi bi-car-front-fill"
+               style="font-size: 14rem; color:#0d6efd;"></i>
+
+        </div>
+
+    </div>
+
+    <hr class="my-5">
+
+    <div class="row text-center">
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm h-100 p-4">
+
+                <i class="bi bi-robot display-4 text-primary"></i>
+
+                <h4 class="mt-3">
+                    AI Diagnosis
+                </h4>
+
+                <p class="text-muted">
+                    Analyze vehicle issues instantly using Google Gemini AI.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm h-100 p-4">
+
+                <i class="bi bi-tools display-4 text-success"></i>
+
+                <h4 class="mt-3">
+                    Expert Mechanics
+                </h4>
+
+                <p class="text-muted">
+                    Find experienced mechanics based on specialization, ratings,
+                    and availability.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm h-100 p-4">
+
+                <i class="bi bi-calendar-check display-4 text-warning"></i>
+
+                <h4 class="mt-3">
+                    Smart Appointments
+                </h4>
+
+                <p class="text-muted">
+                    Book appointments, track progress, and view mechanic notes
+                    from one place.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 

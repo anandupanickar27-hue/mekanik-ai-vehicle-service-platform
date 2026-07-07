@@ -2,92 +2,242 @@
 
 {% block content %}
 
-<h2>Appointments</h2>
+<div class="card shadow-lg border-0">
 
+    <div class="card-header bg-primary text-white">
 
+        <h3 class="mb-0">
 
-<form method="GET">
+            <i class="bi bi-calendar-check-fill"></i>
+            My Appointments
 
-    <div class="mb-3">
-
-        <input
-            type="text"
-            name="search"
-            value="{{ search }}"
-            placeholder="Search issue..."
-            class="form-control">
+        </h3>
 
     </div>
 
-    <button class="btn btn-primary">
-        Search
-    </button>
+    <div class="card-body">
 
-</form>
+        <form method="GET" class="row g-3 mb-4">
 
-<br>
+            <div class="col-md-10">
 
-<a href="/appointments" class="btn btn-secondary">
-    All
-</a>
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ search }}"
+                    class="form-control"
+                    placeholder="🔍 Search by issue...">
 
-<a href="/appointments?status=Pending" class="btn btn-warning">
-    Pending
-</a>
+            </div>
 
-<a href="/appointments?status=In Progress" class="btn btn-info">
-    In Progress
-</a>
+            <div class="col-md-2 d-grid">
 
-<a href="/appointments?status=Completed" class="btn btn-success">
-    Completed
-</a>
+                <button class="btn btn-primary">
 
+                    <i class="bi bi-search"></i>
+                    Search
 
-<br><br>
+                </button>
 
-<table class="table">
+            </div>
 
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Vehicle ID</th>
-            <th>Issue</th>
-            <th>Mechanic</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
-    </thead>
+        </form>
 
-    <tbody>
+        <div class="mb-4">
 
-        {% for appointment in appointments %}
+            <a href="/appointments"
+               class="btn btn-outline-dark me-2">
 
-        <tr>
-            <td>{{ appointment.id }}</td>
-            <td>{{ appointment.vehicle_id }}</td>
-            <td>{{ appointment.issue_description }}</td>
-            <td>{{ appointment.mechanic.name }}</td>
-            <td>{{ appointment.status }}</td>
-            <td>
-                <a href="/appointment/{{ appointment.id }}"
-                class="btn btn-info btn-sm">
-                View
-                </a>
-            </td>
-            <td>
-                <a href="/cancel-appointment/{{ appointment.id }}"
-                class="btn btn-danger">
-                    Cancel
-                </a>
-            </td>
-        </tr>
-            
+                <i class="bi bi-list"></i>
+                All
 
-        {% endfor %}
+            </a>
 
-    </tbody>
+            <a href="/appointments?status=Pending"
+               class="btn btn-outline-warning me-2">
 
-</table>
+                Pending
+
+            </a>
+
+            <a href="/appointments?status=In Progress"
+               class="btn btn-outline-info me-2">
+
+                In Progress
+
+            </a>
+
+            <a href="/appointments?status=Completed"
+               class="btn btn-outline-success">
+
+                Completed
+
+            </a>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Vehicle</th>
+                        <th>Issue</th>
+                        <th>Mechanic</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for appointment in appointments %}
+
+                    <tr>
+
+                        <td>
+
+                            <strong>#{{ appointment.id }}</strong>
+
+                        </td>
+
+                        <td>
+
+                            <i class="bi bi-car-front-fill text-primary"></i>
+
+                            {{ appointment.vehicle.company }}
+                            {{ appointment.vehicle.model }}
+
+                        </td>
+
+                        <td>
+
+                            {{ appointment.issue_description }}
+
+                        </td>
+
+                        <td>
+
+                            <i class="bi bi-person-workspace text-success"></i>
+
+                            {{ appointment.mechanic.name }}
+
+                        </td>
+
+                        <td>
+
+                            {% if appointment.status == "Pending" %}
+
+                                <span class="badge bg-warning text-dark">
+
+                                    Pending
+
+                                </span>
+
+                            {% elif appointment.status == "In Progress" %}
+
+                                <span class="badge bg-info">
+
+                                    In Progress
+
+                                </span>
+
+                            {% elif appointment.status == "Completed" %}
+
+                                <span class="badge bg-success">
+
+                                    Completed
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary">
+
+                                    {{ appointment.status }}
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td class="text-center">
+
+                            <a
+                                href="/appointment/{{ appointment.id }}"
+                                class="btn btn-primary btn-sm">
+
+                                <i class="bi bi-eye-fill"></i>
+                                View
+
+                            </a>
+
+                            {% if appointment.status != "Completed" %}
+
+                            <a
+                                href="/cancel-appointment/{{ appointment.id }}"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to cancel this appointment?');">
+
+                                <i class="bi bi-x-circle-fill"></i>
+                                Cancel
+
+                            </a>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% if appointments|length == 0 %}
+
+        <div class="text-center py-5">
+
+            <i class="bi bi-calendar-x display-1 text-secondary"></i>
+
+            <h4 class="mt-3">
+
+                No Appointments Found
+
+            </h4>
+
+            <p class="text-muted">
+
+                Book your first appointment using the AI Assistant.
+
+            </p>
+
+            <a
+                href="/ai-assistant"
+                class="btn btn-primary">
+
+                <i class="bi bi-robot"></i>
+                Open AI Assistant
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
 
 {% endblock %}

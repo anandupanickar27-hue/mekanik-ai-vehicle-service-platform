@@ -2,121 +2,238 @@
 
 {% block content %}
 
-<h2>Mekanik AI Assistant</h2>
+<div class="row justify-content-center">
 
-<form method="POST">
+    <div class="col-lg-10">
 
-    <div class="mb-3">
+        <div class="card shadow-lg border-0 mb-4">
 
-        <label>Describe Your Vehicle Issue</label>
+            <div class="card-header bg-primary text-white">
 
-        <textarea
-            name="issue"
-            class="form-control"
-            rows="5"
-            required></textarea>
+                <h2 class="mb-0">
+                    <i class="bi bi-robot"></i>
+                    Mekanik AI Assistant
+                </h2>
 
-    </div>
-
-    <button class="btn btn-primary">
-        Analyze Issue
-    </button>
-
-</form>
-
-{% if response %}
-
-<div class="alert alert-info mt-4">
-
-    <h5>AI Analysis</h5>
-
-    <p>{{ response }}</p>
-
-</div>
-
-<h4 class="mt-4">Recommended Mechanics</h4>
-
-{% if mechanics %}
-
-    {% for mechanic in mechanics %}
-
-    <div class="card p-3 mb-3">
-
-        <h5>{{ mechanic.name }}</h5>
-
-        <p>
-            <strong>Specialization:</strong>
-            {{ mechanic.mechanic_profile.specialization }}
-        </p>
-
-        <p>
-            <strong>Experience:</strong>
-            {{ mechanic.mechanic_profile.experience }}
-            Years
-        </p>
-
-        <p>
-            <strong>Rating:</strong>
-            ⭐ {{ mechanic.mechanic_profile.rating }}
-        </p>
-
-        <form method="POST" action="/create-appointment">
-
-            <input
-                type="hidden"
-                name="mechanic_id"
-                value="{{ mechanic.id }}">
-
-            <input
-                type="hidden"
-                name="issue_description"
-                value="{{ request.form['issue'] }}">
-
-            <input
-                type="hidden"
-                name="ai_recommendation"
-                value="{{ response }}">
-
-            <div class="mb-3">
-
-                <label>Select Vehicle</label>
-
-                <select
-                    name="vehicle_id"
-                    class="form-select"
-                    required>
-
-                    {% for vehicle in vehicles %}
-
-                    <option value="{{ vehicle.id }}">
-                        {{ vehicle.company }}
-                        {{ vehicle.model }}
-                    </option>
-
-                    {% endfor %}
-
-                </select>
+                <small>
+                    Describe your vehicle issue and let AI analyze it.
+                </small>
 
             </div>
 
-            <button class="btn btn-success">
-                Create Appointment
-            </button>
+            <div class="card-body p-4">
 
-        </form>
+                <form method="POST">
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-car-front-fill"></i>
+                            Describe Your Vehicle Issue
+                        </label>
+
+                        <textarea
+                            name="issue"
+                            class="form-control"
+                            rows="5"
+                            placeholder="Example: My car makes a squeaking noise when I apply the brakes..."
+                            required></textarea>
+
+                    </div>
+
+                    <button class="btn btn-primary btn-lg">
+
+                        <i class="bi bi-search"></i>
+                        Analyze Issue
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        {% if response %}
+
+        <div class="card shadow border-0 mb-4">
+
+            <div class="card-header bg-info text-white">
+
+                <h4 class="mb-0">
+
+                    <i class="bi bi-cpu-fill"></i>
+                    AI Diagnosis
+
+                </h4>
+
+            </div>
+
+            <div class="card-body">
+
+                <pre style="white-space: pre-wrap; font-family: inherit;">{{ response }}</pre>
+
+            </div>
+
+        </div>
+
+        <h3 class="mb-4">
+
+            <i class="bi bi-person-workspace"></i>
+            Recommended Mechanics
+
+        </h3>
+
+        {% if mechanics %}
+
+            <div class="row">
+
+            {% for mechanic in mechanics %}
+
+                <div class="col-lg-6 mb-4">
+
+                    <div class="card shadow-sm h-100 border-0">
+
+                        <div class="card-body">
+
+                            <h4>
+
+                                <i class="bi bi-person-circle text-primary"></i>
+
+                                {{ mechanic.name }}
+
+                            </h4>
+
+                            <hr>
+
+                            <p>
+
+                                <strong>
+                                    <i class="bi bi-tools"></i>
+                                    Specialization:
+                                </strong>
+
+                                {{ mechanic.mechanic_profile.specialization }}
+
+                            </p>
+
+                            <p>
+
+                                <strong>
+                                    <i class="bi bi-award"></i>
+                                    Experience:
+                                </strong>
+
+                                {{ mechanic.mechanic_profile.experience }}
+                                Years
+
+                            </p>
+
+                            <p>
+
+                                <strong>
+                                    ⭐ Rating:
+                                </strong>
+
+                                {{ mechanic.mechanic_profile.rating }}
+
+                            </p>
+
+                            <p>
+
+                                <strong>
+                                    <i class="bi bi-calendar-check"></i>
+                                    Available Slots:
+                                </strong>
+
+                                {{ mechanic.mechanic_profile.available_slots }}
+
+                            </p>
+
+                            <form
+                                method="POST"
+                                action="/create-appointment">
+
+                                <input
+                                    type="hidden"
+                                    name="mechanic_id"
+                                    value="{{ mechanic.id }}">
+
+                                <input
+                                    type="hidden"
+                                    name="issue_description"
+                                    value="{{ request.form['issue'] }}">
+
+                                <input
+                                    type="hidden"
+                                    name="ai_recommendation"
+                                    value="{{ response }}">
+
+                                <div class="mb-3">
+
+                                    <label class="form-label fw-bold">
+
+                                        <i class="bi bi-car-front-fill"></i>
+                                        Select Vehicle
+
+                                    </label>
+
+                                    <select
+                                        name="vehicle_id"
+                                        class="form-select"
+                                        required>
+
+                                        {% for vehicle in vehicles %}
+
+                                        <option value="{{ vehicle.id }}">
+
+                                            {{ vehicle.company }}
+                                            {{ vehicle.model }}
+
+                                        </option>
+
+                                        {% endfor %}
+
+                                    </select>
+
+                                </div>
+
+                                <button class="btn btn-success w-100">
+
+                                    <i class="bi bi-calendar-plus"></i>
+
+                                    Create Appointment
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="alert alert-warning shadow-sm">
+
+                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                No matching mechanics found.
+
+            </div>
+
+        {% endif %}
+
+        {% endif %}
 
     </div>
 
-    {% endfor %}
-
-{% else %}
-
-    <div class="alert alert-warning">
-        No matching mechanics found.
-    </div>
-
-{% endif %}
-
-{% endif %}
+</div>
 
 {% endblock %}

@@ -2,46 +2,189 @@
 
 {% block content %}
 
-<h2>Appointment Details</h2>
+<div class="row justify-content-center">
 
-<p><strong>ID:</strong> {{ appointment.id }}</p>
+    <div class="col-lg-10">
 
-<p><strong>Vehicle ID:</strong> {{ appointment.vehicle_id }}</p>
+        <div class="card shadow-lg border-0">
 
-<p><strong>Issue:</strong> {{ appointment.issue_description }}</p>
+            <div class="card-header bg-primary text-white">
 
-<p><strong>Category:</strong> {{ appointment.category }}</p>
+                <h3 class="mb-0">
 
-<p>
-    <strong>Mechanic:</strong>
-    {{ appointment.mechanic.name }}
-</p>
+                    <i class="bi bi-calendar-check-fill"></i>
+                    Appointment Details
 
-<p>
-    <strong>Specialization:</strong>
-    {{ appointment.mechanic.mechanic_profile.specialization }}
-</p>
+                </h3>
 
-<p><strong>Status:</strong> {{ appointment.status }}</p>
+            </div>
 
-<p><strong>AI Recommendation:</strong></p>
+            <div class="card-body p-4">
 
-<div class="card p-3">
-    {{ appointment.ai_recommendation }}
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <p>
+
+                            <strong>
+                                <i class="bi bi-hash"></i>
+                                Appointment ID:
+                            </strong>
+
+                            {{ appointment.id }}
+
+                        </p>
+
+                        <p>
+
+                            <strong>
+                                <i class="bi bi-car-front-fill"></i>
+                                Vehicle ID:
+                            </strong>
+
+                            {{ appointment.vehicle_id }}
+
+                        </p>
+
+                        <p>
+
+                            <strong>
+                                <i class="bi bi-tools"></i>
+                                Category:
+                            </strong>
+
+                            {{ appointment.category }}
+
+                        </p>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <p>
+
+                            <strong>
+                                <i class="bi bi-person-workspace"></i>
+                                Mechanic:
+                            </strong>
+
+                            {{ appointment.mechanic.name }}
+
+                        </p>
+
+                        <p>
+
+                            <strong>
+                                <i class="bi bi-award-fill"></i>
+                                Specialization:
+                            </strong>
+
+                            {{ appointment.mechanic.mechanic_profile.specialization }}
+
+                        </p>
+
+                        <p>
+
+                            <strong>
+                                <i class="bi bi-activity"></i>
+                                Status:
+                            </strong>
+
+                            {% if appointment.status == "Pending" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    Pending
+                                </span>
+
+                            {% elif appointment.status == "In Progress" %}
+
+                                <span class="badge bg-info">
+                                    In Progress
+                                </span>
+
+                            {% elif appointment.status == "Completed" %}
+
+                                <span class="badge bg-success">
+                                    Completed
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary">
+                                    {{ appointment.status }}
+                                </span>
+
+                            {% endif %}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <h5>
+
+                    <i class="bi bi-exclamation-circle-fill text-danger"></i>
+                    Reported Issue
+
+                </h5>
+
+                <div class="card bg-light border-0 p-3 mb-4">
+
+                    {{ appointment.issue_description }}
+
+                </div>
+
+                <h5>
+
+                    <i class="bi bi-robot text-primary"></i>
+                    AI Recommendation
+
+                </h5>
+
+                <div class="card bg-light border-0 p-3 mb-4">
+
+                    <pre style="white-space: pre-wrap; font-family: inherit;">{{ appointment.ai_recommendation }}</pre>
+
+                </div>
+
+                {% if appointment.mechanic_notes %}
+
+                <h5>
+
+                    <i class="bi bi-journal-text text-success"></i>
+                    Mechanic Notes
+
+                </h5>
+
+                <div class="card bg-light border-0 p-3">
+
+                    {{ appointment.mechanic_notes }}
+
+                </div>
+
+                {% endif %}
+
+                <div class="mt-4">
+
+                    <a href="/appointments" class="btn btn-secondary">
+
+                        <i class="bi bi-arrow-left"></i>
+                        Back to Appointments
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
-
-{% if appointment.mechanic_notes %}
-
-<div class="card p-3 mt-3">
-
-    <h5>Mechanic Notes</h5>
-
-    <p>
-        {{ appointment.mechanic_notes }}
-    </p>
-
-</div>
-
-{% endif %}
 
 {% endblock %}

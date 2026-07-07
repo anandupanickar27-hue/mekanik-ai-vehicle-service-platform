@@ -2,31 +2,223 @@
 
 {% block content %}
 
-<h2>Mechanic Dashboard</h2>
+<div class="mb-4">
 
-<div class="card p-3">
+    <h2 class="fw-bold">
 
-    <h4>{{ current_user.name }}</h4>
+        <i class="bi bi-speedometer2 text-primary"></i>
+        Mechanic Dashboard
 
-    <p>
-        <strong>Specialization:</strong>
-        {{ current_user.mechanic_profile.specialization }}
+    </h2>
+
+    <p class="text-muted">
+        Welcome back, {{ current_user.name }}.
     </p>
 
-    <p>
-        <strong>Experience:</strong>
-        {{ current_user.mechanic_profile.experience }} Years
-    </p>
+</div>
 
-    <p>
-        <strong>Phone:</strong>
-        {{ current_user.mechanic_profile.phone }}
-    </p>
+<div class="row g-4">
 
-    <p>
-        <strong>Bio:</strong>
-        {{ current_user.mechanic_profile.bio }}
-    </p>
+    <div class="col-lg-4">
+
+        <div class="card shadow border-0 h-100">
+
+            <div class="card-header bg-primary text-white">
+
+                <h4 class="mb-0">
+
+                    <i class="bi bi-person-badge-fill"></i>
+                    Profile
+
+                </h4>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="text-center mb-4">
+
+                    <i class="bi bi-person-circle text-primary"
+                       style="font-size:5rem;"></i>
+
+                    <h4 class="mt-3">
+
+                        {{ current_user.name }}
+
+                    </h4>
+
+                </div>
+
+                <hr>
+
+                <p>
+
+                    <strong>
+                        <i class="bi bi-tools"></i>
+                        Specialization
+                    </strong>
+
+                    <br>
+
+                    {{ current_user.mechanic_profile.specialization }}
+
+                </p>
+
+                <p>
+
+                    <strong>
+                        <i class="bi bi-award-fill"></i>
+                        Experience
+                    </strong>
+
+                    <br>
+
+                    {{ current_user.mechanic_profile.experience }}
+                    Years
+
+                </p>
+
+                <p>
+
+                    <strong>
+                        <i class="bi bi-telephone-fill"></i>
+                        Phone
+                    </strong>
+
+                    <br>
+
+                    {{ current_user.mechanic_profile.phone }}
+
+                </p>
+
+                <p>
+
+                    <strong>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        Rating
+                    </strong>
+
+                    <br>
+
+                    ⭐ {{ current_user.mechanic_profile.rating }}
+
+                </p>
+
+                <p>
+
+                    <strong>
+                        <i class="bi bi-calendar-check-fill text-success"></i>
+                        Available Slots
+                    </strong>
+
+                    <br>
+
+                    <span class="badge bg-success fs-6">
+
+                        {{ current_user.mechanic_profile.available_slots }}
+
+                    </span>
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-8">
+
+        <div class="card shadow border-0 mb-4">
+
+            <div class="card-header bg-success text-white">
+
+                <h4 class="mb-0">
+
+                    <i class="bi bi-card-text"></i>
+                    Professional Bio
+
+                </h4>
+
+            </div>
+
+            <div class="card-body">
+
+                {{ current_user.mechanic_profile.bio }}
+
+            </div>
+
+        </div>
+
+        <div class="card shadow border-0">
+
+            <div class="card-header bg-dark text-white">
+
+                <h4 class="mb-0">
+
+                    <i class="bi bi-lightning-fill"></i>
+                    Quick Actions
+
+                </h4>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+
+                        <a href="/my-jobs"
+                           class="btn btn-primary w-100">
+
+                            <i class="bi bi-tools"></i>
+
+                            <br>
+
+                            My Jobs
+
+                        </a>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <a href="/profile"
+                           class="btn btn-success w-100">
+
+                            <i class="bi bi-person-circle"></i>
+
+                            <br>
+
+                            My Profile
+
+                        </a>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <a href="/edit-mechanic-profile"
+                           class="btn btn-warning w-100">
+
+                            <i class="bi bi-pencil-square"></i>
+
+                            <br>
+
+                            Edit Profile
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 

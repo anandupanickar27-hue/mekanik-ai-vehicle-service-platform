@@ -2,35 +2,169 @@
 
 {% block content %}
 
-<h2>Update Job Status</h2>
+<div class="row justify-content-center">
 
-<form method="POST">
+    <div class="col-lg-7">
 
-    <select name="status" class="form-select">
+        <div class="card shadow-lg border-0">
 
-        <option>Pending</option>
-        <option>In Progress</option>
-        <option>Completed</option>
+            <div class="card-header bg-primary text-white">
 
-    </select>
+                <h3 class="mb-0">
 
-    <br>
+                    <i class="bi bi-tools"></i>
+                    Update Service Status
 
-    <div class="mb-3">
+                </h3>
 
-    <label>Mechanic Notes</label>
+                <small>
+                    Update the progress of the assigned vehicle service.
+                </small>
 
-    <textarea
-        name="mechanic_notes"
-        class="form-control"
-        rows="4">{{ job.mechanic_notes or "" }}</textarea>
+            </div>
+
+            <div class="card-body p-4">
+
+                <div class="card bg-light border-0 mb-4">
+
+                    <div class="card-body">
+
+                        <h5>
+
+                            <i class="bi bi-hash"></i>
+                            Job ID: {{ job.id }}
+
+                        </h5>
+
+                        <p class="mb-2">
+
+                            <strong>
+                                <i class="bi bi-car-front-fill"></i>
+                                Vehicle
+                            </strong>
+
+                            <br>
+
+                            {{ job.vehicle.company }}
+                            {{ job.vehicle.model }}
+
+                        </p>
+
+                        <p class="mb-2">
+
+                            <strong>
+                                <i class="bi bi-exclamation-circle-fill text-danger"></i>
+                                Reported Issue
+                            </strong>
+
+                            <br>
+
+                            {{ job.issue_description }}
+
+                        </p>
+
+                        <p class="mb-0">
+
+                            <strong>
+                                <i class="bi bi-tools"></i>
+                                Category
+                            </strong>
+
+                            <br>
+
+                            <span class="badge bg-secondary">
+
+                                {{ job.category }}
+
+                            </span>
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <form method="POST">
+
+                    <div class="mb-4">
+
+                        <label class="form-label fw-bold">
+
+                            <i class="bi bi-activity"></i>
+                            Service Status
+
+                        </label>
+
+                        <select
+                            name="status"
+                            class="form-select"
+                            required>
+
+                            <option value="Pending"
+                                {% if job.status == "Pending" %}selected{% endif %}>
+                                🟡 Pending
+                            </option>
+
+                            <option value="In Progress"
+                                {% if job.status == "In Progress" %}selected{% endif %}>
+                                🔵 In Progress
+                            </option>
+
+                            <option value="Completed"
+                                {% if job.status == "Completed" %}selected{% endif %}>
+                                🟢 Completed
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <label class="form-label fw-bold">
+
+                            <i class="bi bi-journal-text"></i>
+                            Mechanic Notes
+
+                        </label>
+
+                        <textarea
+                            name="mechanic_notes"
+                            class="form-control"
+                            rows="6"
+                            placeholder="Describe the repairs performed, parts replaced, observations, recommendations, etc.">{{ job.mechanic_notes or "" }}</textarea>
+
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+
+                        <a
+                            href="/my-jobs"
+                            class="btn btn-outline-secondary">
+
+                            <i class="bi bi-arrow-left"></i>
+                            Back
+
+                        </a>
+
+                        <button
+                            class="btn btn-success">
+
+                            <i class="bi bi-check-circle-fill"></i>
+                            Update Job
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
 
     </div>
 
-    <button class="btn btn-success">
-        Update Status
-    </button>
-
-</form>
+</div>
 
 {% endblock %}

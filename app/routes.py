@@ -75,18 +75,29 @@ def login():
 
             login_user(user)
 
-            if user.role == "mechanic":
-
-                if not user.mechanic_profile:
-                    return redirect(
-                    url_for("complete_mechanic_profile")
-                     )
+            if user.role == "admin":
 
                 return redirect(
-                url_for("mechanic_dashboard")
+                    url_for("admin_dashboard")
                 )
 
-            return redirect(url_for("dashboard"))
+            elif user.role == "mechanic":
+
+                if not user.mechanic_profile:
+
+                    return redirect(
+                        url_for("complete_mechanic_profile")
+                    )
+
+                return redirect(
+                    url_for("mechanic_dashboard")
+                )
+
+            else:
+
+                return redirect(
+                    url_for("dashboard")
+                )
 
         return "Invalid email or password"
 
@@ -115,6 +126,34 @@ def register():
         return redirect(url_for("login"))
 
     return render_template("register.html")
+
+@app.route("/admin-dashboard")
+@login_required
+@admin_required
+def admin_dashboard():
+
+    total_users = User.query.count()
+
+    total_customers = User.query.filter_by(
+        role="customer"
+    ).count()
+
+    total_mechanics = User.query.filter_by(
+        role="mechanic"
+    ).count()
+
+    total_vehicles = Vehicle.query.count()
+
+    total_appointments = Appointment.query.count()
+
+    return render_template(
+        "admin_dashboard.html",
+        total_users=total_users,
+        total_customers=total_customers,
+        total_mechanics=total_mechanics,
+        total_vehicles=total_vehicles,
+        total_appointments=total_appointments
+    )
 
 @app.route("/vehicle/<int:id>")
 @login_required
@@ -506,20 +545,20 @@ def edit_mechanic_profile():
 @login_required
 def mechanics():
 
-    search = request.args.get("search", "")
+    search = request.args.get("search", "").strip()
 
     query = User.query.filter_by(
         role="mechanic"
+    ).join(
+        MechanicProfile
     )
 
     if search:
 
-        query = query.join(
-            MechanicProfile
-        ).filter(
+        query = query.filter(
             or_(
-                User.name.contains(search),
-                MechanicProfile.specialization.contains(search)
+                User.name.ilike(f"%{search}%"),
+                MechanicProfile.specialization.ilike(f"%{search}%")
             )
         )
 
