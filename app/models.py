@@ -51,11 +51,7 @@ class User(UserMixin, db.Model):
     lazy=True
     )
 
-    reviews_received = db.relationship(
-    "Review",
-    foreign_keys="Review.mechanic_id",
-    lazy=True
-)
+
     
 
 

@@ -4,6 +4,7 @@ from app import app
 from app.models import User, Vehicle, Appointment, MechanicProfile, Review
 from flask_login import current_user
 from app import db
+from email_validator import validate_email, EmailNotValidError
 from flask import redirect, url_for
 from app.ai_helper import categorize_issue
 from app.gemini_helper import ask_gemini
@@ -110,6 +111,21 @@ def register():
 
         name = request.form["name"]
         email = request.form["email"]
+
+        try:
+            validate_email(email)
+
+        except EmailNotValidError:
+
+            return "Invalid email address"
+        
+        existing_user = User.query.filter_by(
+        email=email
+        ).first()
+
+        if existing_user:
+            return "Email already registered"
+
         password = request.form["password"]
         role = request.form["role"]
 
