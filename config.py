@@ -4,10 +4,16 @@ import os
 
 load_dotenv()
 
-password = quote_plus("Nripan@15")
-
 class Config:
-    SECRET_KEY = "mysecretkey123"
-    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://root:{password}@localhost/mekanik"
+    SECRET_KEY = os.getenv("SECRET_KEY", "")
+
+    db_user = os.getenv("DB_USER", "root")
+    db_password = quote_plus(os.getenv("DB_PASSWORD", ""))
+    db_host = os.getenv("DB_HOST", "localhost")
+    db_name = os.getenv("DB_NAME", "mekanik")
+
+    SQLALCHEMY_DATABASE_URI = (
+        f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}"
+    )
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    
