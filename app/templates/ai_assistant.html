@@ -2,238 +2,363 @@
 
 {% block content %}
 
-<div class="row justify-content-center">
+<div class="container py-4">
 
-    <div class="col-lg-10">
+    <div class="row justify-content-center">
 
-        <div class="card shadow-lg border-0 mb-4">
+        <div class="col-lg-10">
 
-            <div class="card-header bg-primary text-white">
+            <div class="card shadow-lg border-0">
 
-                <h2 class="mb-0">
-                    <i class="bi bi-robot"></i>
-                    Mekanik AI Assistant
-                </h2>
+                <div class="card-header bg-primary text-white py-3">
 
-                <small>
-                    Describe your vehicle issue and let AI analyze it.
-                </small>
+                    <h2 class="mb-1">
+                        <i class="bi bi-robot"></i>
+                        Mekanik AI Assistant
+                    </h2>
+
+                    <small>
+                        Select your vehicle and describe the issue to receive an AI-powered diagnosis.
+                    </small>
+
+                </div>
+
+                <div class="card-body p-4">
+
+                    <form method="POST">
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-car-front-fill"></i>
+                                Select Vehicle
+                            </label>
+
+                            <select
+                                class="form-select"
+                                name="vehicle_id"
+                                required>
+
+                                <option value="">
+                                    Choose Vehicle
+                                </option>
+
+                                {% for vehicle in vehicles %}
+
+                                <option
+                                    value="{{ vehicle.id }}"
+                                    {% if selected_vehicle and selected_vehicle.id == vehicle.id %}selected{% endif %}>
+
+                                    {{ vehicle.company }}
+                                    {{ vehicle.model }}
+                                    ({{ vehicle.registration_number }})
+
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-tools"></i>
+                                Describe Your Vehicle Issue
+                            </label>
+
+                            <textarea
+                                class="form-control"
+                                name="issue"
+                                rows="6"
+                                placeholder="Example: Engine overheats after driving for 20 minutes..."
+                                required>{{ request.form.get('issue','') }}</textarea>
+
+                        </div>
+
+                        <button
+                            id="analyzeBtn"
+                            type="submit"
+                            class="btn btn-primary w-100">
+
+                            <i class="bi bi-robot"></i>
+                            Analyze Issue
+
+                        </button>
+
+                    </form>
+
+                </div>
 
             </div>
 
-            <div class="card-body p-4">
+            {% if response %}
 
-                <form method="POST">
+            <div class="card shadow border-0 mt-4">
 
-                    <div class="mb-3">
+                <div class="card-header bg-success text-white">
 
-                        <label class="form-label fw-bold">
+                    <h4 class="mb-0">
+
+                        <i class="bi bi-cpu-fill"></i>
+                        AI Vehicle Analysis
+
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if selected_vehicle %}
+
+                    <div class="alert alert-primary">
+
+                        <h5 class="mb-2">
+
                             <i class="bi bi-car-front-fill"></i>
-                            Describe Your Vehicle Issue
-                        </label>
 
-                        <textarea
-                            name="issue"
-                            class="form-control"
-                            rows="5"
-                            placeholder="Example: My car makes a squeaking noise when I apply the brakes..."
-                            required></textarea>
+                            {{ selected_vehicle.company }}
+                            {{ selected_vehicle.model }}
+                            ({{ selected_vehicle.year }})
+
+                        </h5>
+
+                        <small>
+
+                            Registration:
+                            {{ selected_vehicle.registration_number }}
+
+                        </small>
 
                     </div>
 
-                    <button class="btn btn-primary btn-lg">
+                    {% endif %}
 
-                        <i class="bi bi-search"></i>
-                        Analyze Issue
+                    <div class="border rounded p-3 bg-light">
 
-                    </button>
+                       <div class="row">
 
-                </form>
-
-            </div>
-
-        </div>
-
-        {% if response %}
-
-        <div class="card shadow border-0 mb-4">
-
-            <div class="card-header bg-info text-white">
-
-                <h4 class="mb-0">
-
-                    <i class="bi bi-cpu-fill"></i>
-                    AI Diagnosis
-
-                </h4>
-
-            </div>
-
+    <div class="col-md-6 mb-3">
+        <div class="card border-primary h-100">
             <div class="card-body">
-
-                <pre style="white-space: pre-wrap; font-family: inherit;">{{ response }}</pre>
-
+                <h5>🔧 Possible Cause</h5>
+                <p>{{ response.possible_cause }}</p>
             </div>
-
         </div>
+    </div>
 
-        <h3 class="mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="card border-danger h-100">
+            <div class="card-body">
+                <h5>⚠ Severity</h5>
+                <p>{{ response.severity }}</p>
+            </div>
+        </div>
+    </div>
 
-            <i class="bi bi-person-workspace"></i>
-            Recommended Mechanics
+    <div class="col-md-6 mb-3">
+        <div class="card border-warning h-100">
+            <div class="card-body">
+                <h5>🚦 Safe to Drive?</h5>
+                <p>{{ response.safe_to_drive }}</p>
+            </div>
+        </div>
+    </div>
 
-        </h3>
+    <div class="col-md-6 mb-3">
+        <div class="card border-success h-100">
+            <div class="card-body">
+                <h5>🛠 Recommended Action</h5>
+                <p>{{ response.recommended_action }}</p>
+            </div>
+        </div>
+    </div>
 
-        {% if mechanics %}
+    <div class="col-12">
+        <div class="card border-info">
+            <div class="card-body">
+                <h5>💰 Estimated Repair</h5>
+                <p>{{ response.estimated_repair }}</p>
+            </div>
+        </div>
+    </div>
 
-            <div class="row">
+</div>
+                    </div>
 
-            {% for mechanic in mechanics %}
+                    <div class="alert alert-warning mt-3 mb-0">
 
-                <div class="col-lg-6 mb-4">
+                        <i class="bi bi-info-circle-fill"></i>
 
-                    <div class="card shadow-sm h-100 border-0">
-
-                        <div class="card-body">
-
-                            <h4>
-
-                                <i class="bi bi-person-circle text-primary"></i>
-
-                                {{ mechanic.name }}
-
-                            </h4>
-
-                            <hr>
-
-                            <p>
-
-                                <strong>
-                                    <i class="bi bi-tools"></i>
-                                    Specialization:
-                                </strong>
-
-                                {{ mechanic.mechanic_profile.specialization }}
-
-                            </p>
-
-                            <p>
-
-                                <strong>
-                                    <i class="bi bi-award"></i>
-                                    Experience:
-                                </strong>
-
-                                {{ mechanic.mechanic_profile.experience }}
-                                Years
-
-                            </p>
-
-                            <p>
-
-                                <strong>
-                                    ⭐ Rating:
-                                </strong>
-
-                                {{ mechanic.mechanic_profile.rating }}
-
-                            </p>
-
-                            <p>
-
-                                <strong>
-                                    <i class="bi bi-calendar-check"></i>
-                                    Available Slots:
-                                </strong>
-
-                                {{ mechanic.mechanic_profile.available_slots }}
-
-                            </p>
-
-                            <form
-                                method="POST"
-                                action="/create-appointment">
-
-                                <input
-                                    type="hidden"
-                                    name="mechanic_id"
-                                    value="{{ mechanic.id }}">
-
-                                <input
-                                    type="hidden"
-                                    name="issue_description"
-                                    value="{{ request.form['issue'] }}">
-
-                                <input
-                                    type="hidden"
-                                    name="ai_recommendation"
-                                    value="{{ response }}">
-
-                                <div class="mb-3">
-
-                                    <label class="form-label fw-bold">
-
-                                        <i class="bi bi-car-front-fill"></i>
-                                        Select Vehicle
-
-                                    </label>
-
-                                    <select
-                                        name="vehicle_id"
-                                        class="form-select"
-                                        required>
-
-                                        {% for vehicle in vehicles %}
-
-                                        <option value="{{ vehicle.id }}">
-
-                                            {{ vehicle.company }}
-                                            {{ vehicle.model }}
-
-                                        </option>
-
-                                        {% endfor %}
-
-                                    </select>
-
-                                </div>
-
-                                <button class="btn btn-success w-100">
-
-                                    <i class="bi bi-calendar-plus"></i>
-
-                                    Create Appointment
-
-                                </button>
-
-                            </form>
-
-                        </div>
+                        This analysis is AI-generated and should not replace an inspection by a qualified mechanic.
 
                     </div>
 
                 </div>
 
-            {% endfor %}
-
             </div>
 
-        {% else %}
+            <h3 class="mt-5 mb-4">
 
-            <div class="alert alert-warning shadow-sm">
+                <i class="bi bi-person-workspace"></i>
+                Recommended Mechanics
 
-                <i class="bi bi-exclamation-triangle-fill"></i>
+            </h3>
 
-                No matching mechanics found.
+            {% if mechanics %}
 
-            </div>
+            <div class="row">
 
-        {% endif %}
+                {% for mechanic in mechanics %}
 
-        {% endif %}
+<div class="col-lg-6 mb-4">
+
+    <div class="card shadow-sm border-0 h-100">
+
+        <div class="card-body">
+
+            <h4 class="d-flex align-items-center">
+
+                <i class="bi bi-person-circle text-primary me-2"></i>
+
+                {{ mechanic.name }}
+
+                {% if mechanic.is_demo %}
+                    <span class="badge bg-success ms-2">
+                        Demo Account
+                    </span>
+                {% endif %}
+
+            </h4>
+
+            <hr>
+
+            <p>
+
+                <strong>Specialization:</strong>
+
+                {{ mechanic.mechanic_profile.specialization }}
+
+            </p>
+
+            <p>
+
+                <strong>Experience:</strong>
+
+                {{ mechanic.mechanic_profile.experience }}
+                Years
+
+            </p>
+
+            <p>
+
+                <strong>⭐ Rating:</strong>
+
+                {{ mechanic.mechanic_profile.rating }}
+
+            </p>
+
+            <p>
+
+                <strong>Available Slots:</strong>
+
+                {{ mechanic.mechanic_profile.available_slots }}
+
+            </p>
+
+            <p>
+
+                <strong>About:</strong>
+
+                {{ mechanic.mechanic_profile.bio }}
+
+            </p>
+
+            <form
+                method="POST"
+                action="{{ url_for('confirm_appointment') }}">
+
+                <input
+                    type="hidden"
+                    name="mechanic_id"
+                    value="{{ mechanic.id }}">
+
+                <input
+                    type="hidden"
+                    name="vehicle_id"
+                    value="{{ selected_vehicle.id }}">
+
+                <input
+                    type="hidden"
+                    name="issue_description"
+                    value="{{ request.form.get('issue') }}">
+
+                <input
+                    type="hidden"
+                    name="category"
+                    value="{{ category }}">
+
+                <input
+                    type="hidden"
+                    name="ai_recommendation"
+                    value="Possible Cause: {{ response.possible_cause }} | Severity: {{ response.severity }} | Safe to Drive: {{ response.safe_to_drive }} | Recommended Action: {{ response.recommended_action }} | Estimated Repair: {{ response.estimated_repair }}">
+
+                <button
+                    class="btn btn-success w-100">
+
+                    <i class="bi bi-calendar-plus"></i>
+
+                    Book Appointment
+
+                </button>
+
+            </form>
+
+        </div>
 
     </div>
 
 </div>
+
+{% endfor %}
+            </div>
+
+            {% else %}
+
+            <div class="alert alert-warning mt-3">
+
+                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                No mechanics matching this issue were found.
+
+            </div>
+
+            {% endif %}
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+document.querySelector("form").addEventListener("submit", function () {
+
+    const btn = document.getElementById("analyzeBtn");
+
+    btn.disabled = true;
+
+    btn.innerHTML = `
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        Analyzing...
+    `;
+
+});
+
+</script>
 
 {% endblock %}

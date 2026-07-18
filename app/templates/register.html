@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}Register | Mekanik{% endblock %}
+
 {% block content %}
 
 <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
@@ -8,9 +10,14 @@
 
         <div class="card shadow-lg border-0">
 
-            <div class="card-header bg-success text-white text-center">
+            <div class="card-header bg-success text-white text-center py-4">
 
-                <h2 class="mb-0">
+                <img src="{{ url_for('static', filename='images/mekanik-logo-dark.svg') }}"
+                     alt="Mekanik Logo"
+                     height="80"
+                     class="mb-3">
+
+                <h2 class="mb-1">
 
                     <i class="bi bi-person-plus-fill"></i>
                     Create Your Account
@@ -24,13 +31,6 @@
             </div>
 
             <div class="card-body p-4">
-
-                <div class="text-center mb-4">
-
-                    <i class="bi bi-car-front-fill text-success"
-                       style="font-size:4rem;"></i>
-
-                </div>
 
                 <form method="POST">
 
@@ -102,15 +102,11 @@
                             class="form-select">
 
                             <option value="customer">
-
                                 🚗 Customer
-
                             </option>
 
                             <option value="mechanic">
-
                                 👨‍🔧 Mechanic
-
                             </option>
 
                         </select>
@@ -134,7 +130,7 @@
 
                     Already have an account?
 
-                    <a href="/login"
+                    <a href="{{ url_for('login') }}"
                        class="fw-bold text-decoration-none">
 
                         Login Here

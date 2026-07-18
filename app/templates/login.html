@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}Login | Mekanik{% endblock %}
+
 {% block content %}
 
 <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
@@ -8,14 +10,15 @@
 
         <div class="card shadow-lg border-0">
 
-            <div class="card-header bg-primary text-white text-center">
+            <div class="card-header bg-primary text-white text-center py-4">
 
-                <h2 class="mb-0">
+                <!-- Logo -->
+                <img src="{{ url_for('static', filename='images/mekanik-icon.svg') }}"
+                     alt="Mekanik Logo"
+                     height="80"
+                     class="mb-3">
 
-                    <i class="bi bi-box-arrow-in-right"></i>
-                    Welcome Back
-
-                </h2>
+                <h2 class="mb-1">Welcome Back</h2>
 
                 <small>
                     Login to continue using Mekanik
@@ -25,13 +28,7 @@
 
             <div class="card-body p-4">
 
-                <div class="text-center mb-4">
-
-                    <i class="bi bi-car-front-fill text-primary"
-                       style="font-size:4rem;"></i>
-
-                </div>
-
+                <!-- Login Form -->
                 <form method="POST">
 
                     <div class="mb-3">
@@ -81,21 +78,54 @@
 
                 </form>
 
-                <hr>
+                <!-- Register -->
 
-                <p class="text-center mb-0">
+                <div class="text-center mt-4">
 
-                    Don't have an account?
+                    <p class="mb-0">
 
-                    <a href="/register"
-                       class="fw-bold text-decoration-none">
+                        Don't have an account?
 
-                        Register Here
+                        <a href="{{ url_for('register') }}"
+                           class="fw-bold text-decoration-none">
 
-                    </a>
+                            Register Here
 
-                </p>
+                        </a>
 
+                    </p>
+
+                </div>
+                     <div class="row mt-4">
+
+                        <div class="col-md-6 mb-3">
+
+                            <a href="{{ url_for('demo_customer_login') }}"
+                               class="btn btn-success btn-lg w-100">
+
+                                <i class="bi bi-person-fill"></i>
+
+                                Demo Customer
+
+                            </a>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <a href="{{ url_for('demo_mechanic_login') }}"
+                               class="btn btn-info text-white btn-lg w-100">
+
+                                <i class="bi bi-tools"></i>
+
+                                Demo Mechanic
+
+                            </a>
+
+                        </div>
+
+                    </div>
+                
             </div>
 
         </div>

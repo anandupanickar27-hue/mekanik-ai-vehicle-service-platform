@@ -51,6 +51,7 @@ class User(UserMixin, db.Model):
     lazy=True
     )
 
+    is_demo = db.Column(db.Boolean, default=False)
 
     
 
@@ -178,6 +179,10 @@ class MechanicProfile(db.Model):
     bio = db.Column(
         db.Text
     )
+
+    review_count = db.Column(db.Integer, default=0)
+
+    completed_jobs = db.Column(db.Integer, default=0)
 
 class Review(db.Model):
 

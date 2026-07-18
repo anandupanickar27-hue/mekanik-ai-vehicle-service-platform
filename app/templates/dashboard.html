@@ -2,6 +2,7 @@
 
 {% block content %}
 
+
 <div class="mb-4">
 
     <h2 class="fw-bold">
@@ -19,7 +20,7 @@
 
 <div class="row g-4">
 
-    <div class="col-lg-3 col-md-6">
+    <div class="col-lg col-md-6">
 
         <div class="card shadow border-0 text-center h-100">
 
@@ -41,7 +42,7 @@
 
     </div>
 
-    <div class="col-lg-3 col-md-6">
+    <div class="col-lg col-md-6">
 
         <div class="card shadow border-0 text-center h-100">
 
@@ -63,7 +64,7 @@
 
     </div>
 
-    <div class="col-lg-3 col-md-6">
+    <div class="col-lg col-md-6">
 
         <div class="card shadow border-0 text-center h-100">
 
@@ -84,8 +85,31 @@
         </div>
 
     </div>
+    
+    <div class="col-lg col-md-6">
 
-    <div class="col-lg-3 col-md-6">
+    <div class="card shadow border-0 text-center h-100">
+
+        <div class="card-body">
+
+            <i class="bi bi-tools display-5 text-info"></i>
+
+            <h5 class="mt-3">
+                In Progress
+            </h5>
+
+            <h2 class="fw-bold">
+                {{ in_progress_appointments }}
+            </h2>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+    <div class="col-lg col-md-6">
 
         <div class="card shadow border-0 text-center h-100">
 
@@ -134,76 +158,6 @@
 
 </div>
 
-<div class="card shadow border-0 mt-5">
-
-    <div class="card-header bg-dark text-white">
-
-        <h4 class="mb-0">
-
-            <i class="bi bi-lightning-fill"></i>
-            Quick Actions
-
-        </h4>
-
-    </div>
-
-    <div class="card-body">
-
-        <div class="row g-3">
-
-            <div class="col-md-3">
-
-                <a href="/add-vehicle"
-                   class="btn btn-primary w-100">
-
-                    <i class="bi bi-plus-circle"></i>
-                    Add Vehicle
-
-                </a>
-
-            </div>
-
-            <div class="col-md-3">
-
-                <a href="/vehicles"
-                   class="btn btn-success w-100">
-
-                    <i class="bi bi-car-front-fill"></i>
-                    My Vehicles
-
-                </a>
-
-            </div>
-
-            <div class="col-md-3">
-
-                <a href="/ai-assistant"
-                   class="btn btn-warning w-100">
-
-                    <i class="bi bi-robot"></i>
-                    AI Assistant
-
-                </a>
-
-            </div>
-
-            <div class="col-md-3">
-
-                <a href="/appointments"
-                   class="btn btn-info w-100">
-
-                    <i class="bi bi-calendar-check-fill"></i>
-                    Appointments
-
-                </a>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -221,6 +175,8 @@ new Chart(ctx, {
 
             "Pending",
 
+            "In Progress",
+
             "Completed"
 
         ],
@@ -230,6 +186,8 @@ new Chart(ctx, {
             data: [
 
                 {{ pending_appointments|tojson }},
+
+                {{ in_progress_appointments|tojson }},
 
                 {{ completed_appointments|tojson }}
 

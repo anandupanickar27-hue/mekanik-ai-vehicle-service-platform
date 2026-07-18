@@ -1,23 +1,45 @@
-from flask import render_template, request
-from app import app
+from functools import wraps
 
-from app.models import User, Vehicle, Appointment, MechanicProfile, Review
-from flask_login import current_user
-from app import db
-from email_validator import validate_email, EmailNotValidError
-from flask import redirect, url_for
-from app.ai_helper import categorize_issue
-from app.gemini_helper import ask_gemini
-from sqlalchemy import or_
+from flask import (
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash
+)
+
+from flask_login import (
+    current_user,
+    login_required,
+    login_user,
+    logout_user
+)
+
 from werkzeug.security import (
     generate_password_hash,
     check_password_hash
 )
-from flask_login import login_required
-from flask_login import logout_user
 
-from functools import wraps
-from flask_login import current_user
+from sqlalchemy import or_
+
+from email_validator import (
+    validate_email,
+    EmailNotValidError
+)
+
+from app import app, db
+
+from app.models import (
+    User,
+    Vehicle,
+    Appointment,
+    MechanicProfile,
+    Review
+)
+import json
+from app.ai_helper import categorize_issue
+from app.gemini_helper import ask_gemini
+from demo_reset import reset_demo_data
 
 def admin_required(f):
 
@@ -103,6 +125,37 @@ def login():
         return "Invalid email or password"
 
     return render_template("login.html")
+
+
+@app.route("/demo/customer")
+def demo_customer_login():
+
+    reset_demo_data()
+
+    user = User.query.filter_by(
+        email="demo.customer@mekanik.com"
+    ).first()
+
+    login_user(user)
+
+    flash("Logged in as Demo Customer", "success")
+
+    return redirect(url_for("dashboard"))
+
+@app.route("/demo/mechanic")
+def demo_mechanic_login():
+
+    reset_demo_data()
+
+    user = User.query.filter_by(
+        email="demo.mechanic@mekanik.com"
+    ).first()
+
+    login_user(user)
+
+    flash("Logged in as Demo Mechanic", "success")
+
+    return redirect(url_for("mechanic_dashboard"))
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -419,64 +472,168 @@ def dashboard():
         Appointment.status == "Completed"
     ).count()
 
+    in_progress_appointments = Appointment.query.join(Vehicle).filter(
+    Vehicle.user_id == current_user.id,
+    Appointment.status == "In Progress"
+    ).count()
+
     return render_template(
-        "dashboard.html",
-        my_vehicles=my_vehicles,
-        my_appointments=my_appointments,
-        pending_appointments=pending_appointments,
-        completed_appointments=completed_appointments
-    )
+    "dashboard.html",
+    my_vehicles=my_vehicles,
+    my_appointments=my_appointments,
+    pending_appointments=pending_appointments,
+    in_progress_appointments=in_progress_appointments,
+    completed_appointments=completed_appointments,
+)
+
+@app.route("/about")
+def about():
+
+    return render_template("about.html")
+
 @app.route("/ai-assistant", methods=["GET", "POST"])
 @login_required
 def ai_assistant():
 
     response = None
     mechanics = []
-    vehicles = []
+    category = None
+
+    vehicles = Vehicle.query.filter_by(
+        user_id=current_user.id
+    ).all()
+
+    selected_vehicle = None
 
     if request.method == "POST":
 
+        vehicle_id = request.form["vehicle_id"]
         issue = request.form["issue"]
 
-        response = ask_gemini(
-            f"""
-            You are an automobile service expert.
+        selected_vehicle = Vehicle.query.get_or_404(vehicle_id)
 
-            User issue:
-            {issue}
+        prompt = f"""
+You are an expert automobile diagnostic assistant.
 
-            Give:
-            1. Possible causes
-            2. Recommended action
-            3. Whether immediate service is needed
+Vehicle Details:
+Company: {selected_vehicle.company}
+Model: {selected_vehicle.model}
+Year: {selected_vehicle.year}
 
-            Keep the response concise.
-            """
-        )
+Customer Complaint:
+{issue}
 
+Return ONLY valid JSON.
+
+Use realistic repair estimates in Indian Rupees (₹).
+
+Typical repair cost guidelines:
+- Minor service: ₹500–₹2,000
+- Oil change: ₹1,000–₹3,000
+- Brake pad replacement: ₹2,000–₹8,000
+- Battery replacement: ₹4,000–₹10,000
+- Tire alignment/balancing: ₹500–₹2,000
+- AC service/gas refill: ₹2,000–₹6,000
+- Suspension repair: ₹3,000–₹15,000
+- Clutch replacement: ₹8,000–₹20,000
+- Engine diagnostics: ₹1,000–₹3,000
+- Major engine repair: ₹20,000–₹80,000
+- Transmission repair: ₹15,000–₹60,000
+
+Only suggest prices within realistic ranges unless the problem clearly indicates catastrophic engine or transmission failure.
+
+Example:
+
+{{
+    "possible_cause": "...",
+    "severity": "Low/Medium/High",
+    "safe_to_drive": "Yes/No/Only short distances",
+    "recommended_action": "...",
+    "estimated_repair": "₹2,500 - ₹4,000"
+}}
+
+Rules:
+- Do not use markdown.
+- Do not use ```json.
+- Return ONLY the JSON object.
+"""
+
+        raw_response = ask_gemini(prompt)
+
+        raw_response = raw_response.replace("```json", "")
+        raw_response = raw_response.replace("```", "")
+        raw_response = raw_response.strip()
+
+        try:
+
+            response = json.loads(raw_response)
+
+        except Exception:
+
+            response = {
+                "possible_cause": raw_response,
+                "severity": "Unknown",
+                "safe_to_drive": "Unknown",
+                "recommended_action": "Consult a qualified mechanic.",
+                "estimated_repair": "Not Available"
+            }
+        CATEGORY_MAPPING = {
+            "Engine": "Engine & Transmission",
+            "Transmission": "Engine & Transmission",
+            "Brake": "Brakes & Suspension",
+            "Brakes": "Brakes & Suspension",
+            "Suspension": "Brakes & Suspension",
+            "Electrical": "Electrical Systems",
+            "Battery": "Battery & Charging",
+            "Charging": "Battery & Charging",
+            "AC": "Air Conditioning",
+            "Air Conditioning": "Air Conditioning",
+            "Tyre": "Tires & Wheels",
+            "Tire": "Tires & Wheels",
+            "Wheel": "Tires & Wheels",
+            "Diagnostic": "Diagnostics",
+            "Diagnostics": "Diagnostics",
+            "Service": "General Service",
+        }
         category = categorize_issue(issue)
 
-        mechanics = User.query.join(
-            MechanicProfile
-        ).filter(
-            User.role == "mechanic",
-            MechanicProfile.specialization == category
-        ).all()
+        category = CATEGORY_MAPPING.get(category, category)
 
-        vehicles = Vehicle.query.filter_by(
-            user_id=current_user.id
-        ).all()
+        mechanics = (
+            User.query
+            .join(MechanicProfile)
+            .filter(
+                User.role == "mechanic",
+                or_(
+                    MechanicProfile.specialization == category,
+                    User.is_demo == True
+                )
+            )
+            .all()
+                )
+
+        mechanics.sort(
+            key=lambda m: (
+                not m.is_demo,
+                -m.mechanic_profile.rating
+            )
+        )
 
     return render_template(
         "ai_assistant.html",
         response=response,
         mechanics=mechanics,
-        vehicles=vehicles
+        vehicles=vehicles,
+        selected_vehicle=selected_vehicle,
+        category=category
     )
 
 @app.route("/logout")
 @login_required
 def logout():
+
+    if current_user.is_authenticated and current_user.is_demo:
+        reset_demo_data()
 
     logout_user()
 
@@ -495,8 +652,34 @@ def profile():
 @login_required
 def mechanic_dashboard():
 
+    appointments = (
+        Appointment.query
+        .filter_by(mechanic_id=current_user.id)
+        .join(Vehicle)
+        .all()
+    )
+
+    pending_count = Appointment.query.filter_by(
+        mechanic_id=current_user.id,
+        status="Pending"
+    ).count()
+
+    in_progress_count = Appointment.query.filter_by(
+        mechanic_id=current_user.id,
+        status="In Progress"
+    ).count()
+
+    completed_count = Appointment.query.filter_by(
+        mechanic_id=current_user.id,
+        status="Completed"
+    ).count()
+
     return render_template(
-        "mechanic_dashboard.html"
+        "mechanic_dashboard.html",
+        appointments=appointments,
+        pending_count=pending_count,
+        in_progress_count=in_progress_count,
+        completed_count=completed_count
     )
 
 @app.route("/complete-mechanic-profile", methods=["GET", "POST"])
@@ -688,21 +871,43 @@ def review_mechanic(id):
 @login_required
 def confirm_appointment():
 
+    vehicle_id = request.form["vehicle_id"]
+    mechanic_id = request.form["mechanic_id"]
+    issue = request.form["issue_description"]
+    ai_recommendation = request.form["ai_recommendation"]
+
+    vehicle = Vehicle.query.get_or_404(vehicle_id)
+
+    # Prevent booking someone else's vehicle
+    if vehicle.user_id != current_user.id:
+        flash("Invalid vehicle selected.", "danger")
+        return redirect(url_for("ai_assistant"))
+
+    mechanic = User.query.filter_by(
+        id=mechanic_id,
+        role="mechanic"
+    ).first_or_404()
+
+    category = categorize_issue(issue)
+
     appointment = Appointment(
-        vehicle_id=request.form["vehicle_id"],
-        mechanic_id=request.form["mechanic_id"],
-        issue_description=request.form["issue_description"],
-        category=request.form["category"],
-        ai_recommendation=request.form["ai_recommendation"]
+        vehicle_id=vehicle.id,
+        mechanic_id=mechanic.id,
+        issue_description=issue,
+        status="Pending",
+        category=category,
+        ai_recommendation=ai_recommendation
     )
 
     db.session.add(appointment)
     db.session.commit()
 
-    return redirect(
-        url_for("appointments")
+    flash(
+        f"Appointment booked successfully with {mechanic.name}.",
+        "success"
     )
 
+    return redirect(url_for("appointments"))
 @app.route("/update-job-status/<int:id>", methods=["GET", "POST"])
 @login_required
 def update_job_status(id):

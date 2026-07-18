@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <!-- Hero -->
+    <div class="text-center"><img src="{{ url_for('static', filename='images/mekanik-icon.svg') }}"
+     class="img-fluid mb-3"
+     style="max-width:280px;">
+     </div>
+    
+     <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">
+             About Mekanik</h1>
+        <p class="lead text-muted">
+            Mekanik is an AI-assisted vehicle service platform that helps
+            vehicle owners diagnose problems, connect with qualified mechanics,
+            and manage vehicle servicing efficiently.
+        </p>
+    </div>
+
+    <!-- Why Mekanik -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <h3>🎯 Why Mekanik?</h3>
+            <p>
+                Vehicle owners often struggle to identify issues and choose the
+                right mechanic. Mekanik combines Artificial Intelligence with a
+                modern service management system to simplify diagnosis,
+                appointment booking, and repair tracking.
+            </p>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+    {% if current_user.is_authenticated and current_user.role == "customer" %}
+
+            <h3>⭐ Key Features</h3>
+
+            <div class="row">
+
+                <div class="col-md-6">
+                    <ul>
+                        <li>🤖 AI Vehicle Diagnosis</li>
+                        <li>🚗 Vehicle Management</li>
+                        <li>👨‍🔧 Mechanic Discovery</li>
+                        <li>📅 Appointment Booking</li>
+                    </ul>
+                </div>
+
+                <div class="col-md-6">
+                    <ul>
+                        <li>📊 Appointment Tracking</li>
+                        <li>⭐ Ratings & Reviews</li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+        {% endif %}
+
+
+    <!-- ========================= -->
+    <!-- CUSTOMER ABOUT -->
+    <!-- ========================= -->
+
+    {% if current_user.is_authenticated and current_user.role == "customer" %}
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <h3>🚗 Customer Guide</h3>
+
+            <p>
+                As a customer, Mekanik helps you identify vehicle issues,
+                discover trusted mechanics, and manage the complete servicing
+                process from one place.
+            </p>
+
+            <h5 class="mt-4">Try These Features</h5>
+
+            <ol>
+                <li>Add one or more vehicles.</li>
+                <li>Select a vehicle in the AI Assistant.</li>
+                <li>Describe your vehicle issue.</li>
+                <li>Receive an AI-powered diagnosis.</li>
+                <li>Browse recommended mechanics.</li>
+                <li>Book a service appointment.</li>
+                <li>Track appointment progress.</li>
+                <li>Leave a review after service.</li>
+            </ol>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+    <!-- ========================= -->
+    <!-- MECHANIC ABOUT -->
+    <!-- ========================= -->
+
+    {% if current_user.is_authenticated and current_user.role == "mechanic" %}
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <h3>👨‍🔧 Mechanic Guide</h3>
+
+            <p>
+                As a mechanic, Mekanik helps you manage appointments, update
+                repair progress, and build your professional reputation.
+            </p>
+
+            <h5 class="mt-4">Try These Features</h5>
+
+            <ol>
+                <li>Complete your mechanic profile.</li>
+                <li>View assigned appointments.</li>
+                <li>Update appointment status.</li>
+                <li>Add repair notes for customers.</li>
+                <li>Manage your availability.</li>
+                <li>Build your reputation through customer reviews.</li>
+            </ol>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+    <!-- ========================= -->
+    <!-- GUEST -->
+    <!-- ========================= -->
+
+    {% if not current_user.is_authenticated %}
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <h3>🚀 What You Can Do</h3>
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <h5>Customers</h5>
+
+                    <ul>
+                        <li>Manage vehicles</li>
+                        <li>Get AI diagnosis</li>
+                        <li>Book mechanics</li>
+                        <li>Track appointments</li>
+                        <li>Review mechanics</li>
+                    </ul>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <h5>Mechanics</h5>
+
+                    <ul>
+                        <li>Create mechanic profile</li>
+                        <li>Manage appointments</li>
+                        <li>Update repair progress</li>
+                        <li>Manage availability</li>
+                        <li>Receive customer ratings</li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+<!-- ========================= -->
+<!-- DEMO INSTRUCTIONS -->
+<!-- ========================= -->
+
+<div class="alert alert-info shadow-sm mb-4">
+
+    <h5 class="fw-bold">
+
+        <i class="bi bi-info-circle-fill"></i>
+        Demo Instructions
+
+    </h5>
+
+    <hr>
+
+    <ol class="mb-3">
+
+        <li>
+            Use the preconfigured <strong>Demo Customer</strong> account to explore customer features such as AI diagnosis, vehicle management, and appointment booking.
+        </li>
+
+        <li>
+            Use the preconfigured <strong>Demo Mechanic</strong> account to explore the mechanic dashboard, assigned jobs, and appointment management.
+        </li>
+
+        <li>
+            For the complete workflow, keep both demo accounts logged in simultaneously by using two browser windows or one normal window and one Incognito/Private window.
+        </li>
+
+    </ol>
+
+    <p class="mb-0">
+
+        <strong>Note:</strong>
+        Demo accounts are preloaded with sample vehicles, mechanics, and appointments to demonstrate the platform. Any changes made during testing are temporary and may be reset when the demo data is restored.
+
+    </p>
+
+</div>
+
+    <!-- Workflow -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <h3>⚙️ Platform Workflow</h3>
+
+            <div class="row text-center mt-4">
+
+                <div class="col-md-2">
+                    <h1>1️⃣</h1>
+                    Register
+                </div>
+
+                <div class="col-md-2">
+                    <h1>2️⃣</h1>
+                    Add Vehicle
+                </div>
+
+                <div class="col-md-2">
+                    <h1>3️⃣</h1>
+                    Ask AI
+                </div>
+
+                <div class="col-md-2">
+                    <h1>4️⃣</h1>
+                    Find Mechanic
+                </div>
+
+                <div class="col-md-2">
+                    <h1>5️⃣</h1>
+                    Book Service
+                </div>
+
+                <div class="col-md-2">
+                    <h1>6️⃣</h1>
+                    Track Progress
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Technologies -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <h3>💻 Technologies Used</h3>
+
+            <div class="row">
+
+                <div class="col-md-4">
+
+                    <ul>
+                        <li>Python</li>
+                        <li>Flask</li>
+                        <li>SQLAlchemy</li>
+                    </ul>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <ul>
+                        <li>MySQL / TiDB</li>
+                        <li>Bootstrap 5</li>
+                        <li>JavaScript</li>
+                    </ul>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <ul>
+                        <li>HTML5</li>
+                        <li>CSS3</li>
+                        <li>Google Gemini AI</li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Developer -->
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body text-center">
+
+            <h3>👨‍💻 Developed By</h3>
+
+                <h5 class="fw-bold mt-3">
+                    Anandu Jith Panickar
+                </h5>
+
+                <p>
+                    Full-Stack Developer with a passion for building AI-powered web applications.
+                    Mekanik showcases modern software engineering practices, including Flask,
+                    SQLAlchemy, Bootstrap, Google Gemini AI integration, and responsive UI design.
+                </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
