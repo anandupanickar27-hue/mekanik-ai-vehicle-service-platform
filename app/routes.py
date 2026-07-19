@@ -513,7 +513,7 @@ def ai_assistant():
         selected_vehicle = Vehicle.query.get_or_404(vehicle_id)
 
         prompt = f"""
-You are an expert automobile diagnostic assistant.
+You are Mekanik AI, an expert automobile diagnostic assistant.
 
 Vehicle Details:
 Company: {selected_vehicle.company}
@@ -523,11 +523,54 @@ Year: {selected_vehicle.year}
 Customer Complaint:
 {issue}
 
-Return ONLY valid JSON.
+IMPORTANT INSTRUCTIONS:
+
+1. First determine whether the customer's complaint is related to automobiles or vehicles.
+
+2. Vehicle-related topics include:
+- Cars
+- Bikes
+- Trucks
+- Vehicle servicing
+- Repairs
+- Maintenance
+- Engine
+- Brakes
+- Battery
+- Tires
+- Suspension
+- AC
+- Electrical systems
+- Spare parts
+- Diagnostics
+- Fuel system
+- Transmission
+- Automotive safety
+
+3. If the question is NOT related to vehicles or automobiles, DO NOT answer it.
+
+Instead return ONLY this JSON:
+
+{{
+    "invalid_query": true,
+    "message": "⚠️ Mekanik AI only answers vehicle-related questions. Please ask about vehicle maintenance, repairs, servicing, diagnostics, or automotive issues."
+}}
+
+4. If the question IS vehicle-related, return ONLY this JSON format:
+
+{{
+    "invalid_query": false,
+    "possible_cause": "...",
+    "severity": "Low/Medium/High",
+    "safe_to_drive": "Yes/No/Only short distances",
+    "recommended_action": "...",
+    "estimated_repair": "₹2,500 - ₹4,000"
+}}
 
 Use realistic repair estimates in Indian Rupees (₹).
 
 Typical repair cost guidelines:
+
 - Minor service: ₹500–₹2,000
 - Oil change: ₹1,000–₹3,000
 - Brake pad replacement: ₹2,000–₹8,000
@@ -540,22 +583,14 @@ Typical repair cost guidelines:
 - Major engine repair: ₹20,000–₹80,000
 - Transmission repair: ₹15,000–₹60,000
 
-Only suggest prices within realistic ranges unless the problem clearly indicates catastrophic engine or transmission failure.
-
-Example:
-
-{{
-    "possible_cause": "...",
-    "severity": "Low/Medium/High",
-    "safe_to_drive": "Yes/No/Only short distances",
-    "recommended_action": "...",
-    "estimated_repair": "₹2,500 - ₹4,000"
-}}
+Only suggest prices within these realistic ranges unless the issue clearly indicates catastrophic engine or transmission failure.
 
 Rules:
+- Return ONLY valid JSON.
 - Do not use markdown.
 - Do not use ```json.
-- Return ONLY the JSON object.
+- Do not include explanations outside the JSON.
+- Never answer non-vehicle questions.
 """
 
         raw_response = ask_gemini(prompt)
@@ -565,11 +600,21 @@ Rules:
         raw_response = raw_response.strip()
 
         try:
-
             response = json.loads(raw_response)
 
-        except Exception:
+            # Check if the AI rejected a non-vehicle query
+            if response.get("invalid_query"):
+                return render_template(
+                "ai_assistant.html",
+                vehicles=vehicles,
+                selected_vehicle=selected_vehicle,
+                error="⚠️ This is not a valid vehicle-related issue. Please ask about vehicle maintenance, repairs, servicing, diagnostics, or automotive problems.",
+                response=None,
+                mechanics=[],
+                invalid_query=True
+            )
 
+        except Exception:
             response = {
                 "possible_cause": raw_response,
                 "severity": "Unknown",
@@ -620,13 +665,13 @@ Rules:
         )
 
     return render_template(
-        "ai_assistant.html",
-        response=response,
-        mechanics=mechanics,
-        vehicles=vehicles,
-        selected_vehicle=selected_vehicle,
-        category=category
-    )
+    "ai_assistant.html",
+    vehicles=vehicles,
+    selected_vehicle=selected_vehicle,
+    response=response,
+    mechanics=mechanics,
+    invalid_query=False
+)
 
 @app.route("/logout")
 @login_required

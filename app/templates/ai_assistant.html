@@ -93,7 +93,20 @@
 
             </div>
 
-            {% if response %}
+            {% if invalid_query %}
+                <div class="alert alert-danger text-center shadow-sm mt-4">
+                    <h4>
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        Invalid Issue
+                    </h4>
+
+                    <p class="mb-0">
+                        {{ error }}
+                    </p>
+                </div>
+            {% endif %}
+
+            {% if response and not invalid_query %}
 
             <div class="card shadow border-0 mt-4">
 
@@ -199,144 +212,117 @@
 
             </div>
 
-            <h3 class="mt-5 mb-4">
+            {% if not invalid_query %}
 
-                <i class="bi bi-person-workspace"></i>
-                Recommended Mechanics
+    <h3 class="mt-5 mb-4">
+        <i class="bi bi-person-workspace"></i>
+        Recommended Mechanics
+    </h3>
 
-            </h3>
+    {% if mechanics %}
 
-            {% if mechanics %}
+    <div class="row">
 
-            <div class="row">
+        {% for mechanic in mechanics %}
 
-                {% for mechanic in mechanics %}
+        <div class="col-lg-6 mb-4">
 
-<div class="col-lg-6 mb-4">
+            <div class="card shadow-sm border-0 h-100">
 
-    <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
 
-        <div class="card-body">
+                    <h4 class="d-flex align-items-center">
 
-            <h4 class="d-flex align-items-center">
+                        <i class="bi bi-person-circle text-primary me-2"></i>
 
-                <i class="bi bi-person-circle text-primary me-2"></i>
+                        {{ mechanic.name }}
 
-                {{ mechanic.name }}
+                        {% if mechanic.is_demo %}
+                        <span class="badge bg-success ms-2">
+                            Demo Account
+                        </span>
+                        {% endif %}
 
-                {% if mechanic.is_demo %}
-                    <span class="badge bg-success ms-2">
-                        Demo Account
-                    </span>
-                {% endif %}
+                    </h4>
 
-            </h4>
+                    <hr>
 
-            <hr>
+                    <p>
+                        <strong>Specialization:</strong>
+                        {{ mechanic.mechanic_profile.specialization }}
+                    </p>
 
-            <p>
+                    <p>
+                        <strong>Experience:</strong>
+                        {{ mechanic.mechanic_profile.experience }} Years
+                    </p>
 
-                <strong>Specialization:</strong>
+                    <p>
+                        <strong>⭐ Rating:</strong>
+                        {{ mechanic.mechanic_profile.rating }}
+                    </p>
 
-                {{ mechanic.mechanic_profile.specialization }}
+                    <p>
+                        <strong>Available Slots:</strong>
+                        {{ mechanic.mechanic_profile.available_slots }}
+                    </p>
 
-            </p>
+                    <p>
+                        <strong>About:</strong>
+                        {{ mechanic.mechanic_profile.bio }}
+                    </p>
 
-            <p>
+                    <form method="POST" action="{{ url_for('confirm_appointment') }}">
 
-                <strong>Experience:</strong>
+                        <input type="hidden"
+                               name="mechanic_id"
+                               value="{{ mechanic.id }}">
 
-                {{ mechanic.mechanic_profile.experience }}
-                Years
+                        <input type="hidden"
+                               name="vehicle_id"
+                               value="{{ selected_vehicle.id }}">
 
-            </p>
+                        <input type="hidden"
+                               name="issue_description"
+                               value="{{ request.form.get('issue') }}">
 
-            <p>
+                        <input type="hidden"
+                               name="category"
+                               value="{{ category }}">
 
-                <strong>⭐ Rating:</strong>
+                        <input type="hidden"
+                               name="ai_recommendation"
+                               value="Possible Cause: {{ response.possible_cause }} | Severity: {{ response.severity }} | Safe to Drive: {{ response.safe_to_drive }} | Recommended Action: {{ response.recommended_action }} | Estimated Repair: {{ response.estimated_repair }}">
 
-                {{ mechanic.mechanic_profile.rating }}
+                        <button class="btn btn-success w-100">
+                            <i class="bi bi-calendar-plus"></i>
+                            Book Appointment
+                        </button>
 
-            </p>
+                    </form>
 
-            <p>
+                </div>
 
-                <strong>Available Slots:</strong>
-
-                {{ mechanic.mechanic_profile.available_slots }}
-
-            </p>
-
-            <p>
-
-                <strong>About:</strong>
-
-                {{ mechanic.mechanic_profile.bio }}
-
-            </p>
-
-            <form
-                method="POST"
-                action="{{ url_for('confirm_appointment') }}">
-
-                <input
-                    type="hidden"
-                    name="mechanic_id"
-                    value="{{ mechanic.id }}">
-
-                <input
-                    type="hidden"
-                    name="vehicle_id"
-                    value="{{ selected_vehicle.id }}">
-
-                <input
-                    type="hidden"
-                    name="issue_description"
-                    value="{{ request.form.get('issue') }}">
-
-                <input
-                    type="hidden"
-                    name="category"
-                    value="{{ category }}">
-
-                <input
-                    type="hidden"
-                    name="ai_recommendation"
-                    value="Possible Cause: {{ response.possible_cause }} | Severity: {{ response.severity }} | Safe to Drive: {{ response.safe_to_drive }} | Recommended Action: {{ response.recommended_action }} | Estimated Repair: {{ response.estimated_repair }}">
-
-                <button
-                    class="btn btn-success w-100">
-
-                    <i class="bi bi-calendar-plus"></i>
-
-                    Book Appointment
-
-                </button>
-
-            </form>
+            </div>
 
         </div>
 
+        {% endfor %}
+
     </div>
 
-</div>
+    {% else %}
 
-{% endfor %}
-            </div>
+    <div class="alert alert-warning mt-3">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        No mechanics matching this issue were found.
+    </div>
 
-            {% else %}
+    {% endif %}
+    
+    {% endif %}
 
-            <div class="alert alert-warning mt-3">
-
-                <i class="bi bi-exclamation-triangle-fill"></i>
-
-                No mechanics matching this issue were found.
-
-            </div>
-
-            {% endif %}
-
-            {% endif %}
+{% endif %}
 
         </div>
 
