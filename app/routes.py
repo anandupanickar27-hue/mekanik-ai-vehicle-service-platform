@@ -53,17 +53,6 @@ def admin_required(f):
 
     return decorated_function
 
-@app.route("/test-form", methods=["GET", "POST"])
-def test_form():
-
-    if request.method == "POST":
-
-        name = request.form["name"]
-
-        return f"Hello {name}"
-
-    return render_template("test_form.html")
-
 @app.route("/")
 def home():
 
@@ -84,8 +73,12 @@ def login():
 
     if request.method == "POST":
 
-        email = request.form["email"]
-        password = request.form["password"]
+        email = request.form["email"].strip().lower()
+        password = request.form["password"].strip()
+
+        if not email or not password:
+            flash("Email and password are required.")
+            return render_template("login.html")
 
         user = User.query.filter_by(
             email=email
@@ -99,7 +92,6 @@ def login():
             login_user(user)
 
             if user.role == "admin":
-
                 return redirect(
                     url_for("admin_dashboard")
                 )
@@ -107,7 +99,6 @@ def login():
             elif user.role == "mechanic":
 
                 if not user.mechanic_profile:
-
                     return redirect(
                         url_for("complete_mechanic_profile")
                     )
@@ -116,16 +107,14 @@ def login():
                     url_for("mechanic_dashboard")
                 )
 
-            else:
+            return redirect(
+                url_for("dashboard")
+            )
 
-                return redirect(
-                    url_for("dashboard")
-                )
-
-        return "Invalid email or password"
+        flash("Invalid email or password.", "danger")
+        return render_template("login.html")
 
     return render_template("login.html")
-
 
 @app.route("/demo/customer")
 def demo_customer_login():
@@ -157,31 +146,60 @@ def demo_mechanic_login():
 
     return redirect(url_for("mechanic_dashboard"))
 
+import re
 @app.route("/register", methods=["GET", "POST"])
 def register():
 
     if request.method == "POST":
 
-        name = request.form["name"]
-        email = request.form["email"]
+        name = request.form["name"].strip()
+        email = request.form["email"].strip().lower()
+        password = request.form["password"].strip()
+        role = request.form["role"]
 
+        # Validate name
+        if len(name) < 3:
+            flash("Name must be at least 3 characters long.")
+            return render_template("register.html")
+
+        if not re.fullmatch(r"[A-Za-z ]+", name):
+            flash("Name can contain only letters and spaces.")
+            return render_template("register.html")
+
+        # Validate email
         try:
-            validate_email(email)
+            email = validate_email(email).normalized
 
         except EmailNotValidError:
+            flash("Invalid email address.")
+            return render_template("register.html")
 
-            return "Invalid email address"
-        
+        # Check if email already exists
         existing_user = User.query.filter_by(
-        email=email
+            email=email
         ).first()
 
         if existing_user:
-            return "Email already registered"
+           flash("Email already registered.", "danger")
+           return render_template("register.html")
+        # Validate password
+        if len(password) < 8:
+            flash("Password must be at least 8 characters long.")
+            return render_template("register.html")
 
-        password = request.form["password"]
-        role = request.form["role"]
+        if not re.search(r"[A-Z]", password):
+            flash("Password must contain at least one uppercase letter.")
+            return render_template("register.html")
 
+        if not re.search(r"[a-z]", password):
+            flash("Password must contain at least one lowercase letter.")
+            return render_template("register.html")
+
+        if not re.search(r"\d", password):
+            flash("Password must contain at least one number.")
+            return render_template("register.html")
+
+        # Create user
         user = User(
             name=name,
             email=email,
