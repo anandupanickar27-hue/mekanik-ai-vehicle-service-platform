@@ -31,6 +31,15 @@
             </div>
 
             <div class="card-body p-4">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
 
                 <form method="POST">
 
@@ -45,10 +54,14 @@
 
                         <input
                             type="text"
-                            name="name"
                             class="form-control"
+                            name="name"
                             placeholder="Enter your full name"
-                            required>
+                            required
+                            minlength="3"
+                            maxlength="50"
+                            pattern="[A-Za-z ]+"
+                            title="Name can contain only letters and spaces.">
 
                     </div>
 
@@ -63,10 +76,11 @@
 
                         <input
                             type="email"
-                            name="email"
                             class="form-control"
+                            name="email"
                             placeholder="Enter your email"
-                            required>
+                            required
+                            maxlength="100">
 
                     </div>
 
@@ -81,10 +95,13 @@
 
                         <input
                             type="password"
-                            name="password"
                             class="form-control"
-                            placeholder="Create a strong password"
-                            required>
+                            name="password"
+                            placeholder="Create a password"
+                            required
+                            minlength="8"
+                            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
+                            title="Password must be at least 8 characters long and contain one uppercase letter, one lowercase letter, and one number.">
 
                     </div>
 
@@ -97,19 +114,16 @@
 
                         </label>
 
-                        <select
-                            name="role"
-                            class="form-select">
+                    <select
+                        class="form-select"
+                        name="role"
+                        required>
 
-                            <option value="customer">
-                                🚗 Customer
-                            </option>
+                        <option value="">Select Role</option>
+                        <option value="customer">Customer</option>
+                        <option value="mechanic">Mechanic</option>
 
-                            <option value="mechanic">
-                                👨‍🔧 Mechanic
-                            </option>
-
-                        </select>
+                    </select>
 
                     </div>
 
